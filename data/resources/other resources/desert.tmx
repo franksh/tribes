@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="40" height="40" tilewidth="32" tileheight="32" nextobjectid="1">
+ <tileset firstgid="1" source="desert.tsx"/>
+ <layer name="Ground" width="40" height="40">
+  <data encoding="base64" compression="zlib">
+   eJztmN1OAjEQRke5UCERUSP+RFxEEUGB9386h9hmN5OhnXanYy+8OIFNuu3ha7cddgYAs4JcImPkqvA4OWwZv5fMvoaV5zcs4HjI6g6ZIvdKOWk7niCnyIB4lxj/AXlM4Am5cGOOlPILMUdeE1hk+EkdVwG/N2SNvBfw6/MczDvjSvLM9UtxWlbotyde1O8Lftf/t7EfXXP0OpYXXZcaftxzsCL5+e8xP5qrVn4f5Nr7pOantb8cg3pSPt38Sdko+J05zqE9i0IMhO08zz39xtDWF/63hhgJ23H35fhNoa0vJsh1hBthO+6+kmvPmgb4Oqcmz8bQJ6c2s/Dauk/J3tk9fxZK40uR+B2c9q6tpd+uQj+6rmvzy5nfbn1h5bdL8KNZ0r6OnU1W+XFzHev3L/0k/Wr55dRmln6loH7c+wpNmp5+mvW6Rnac3y30r+e4rGLvBiV7y8S5lZzn1DnmkMxziX1Uiq/xpfMc+m9i6f1PXfwAXKSy2Q==
+  </data>
+ </layer>
+</map>
