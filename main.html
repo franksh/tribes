@@ -9,6 +9,7 @@
     <script src='unit.js'></script>
     <script src='building.js'></script>
     <script src='util.js'></script>
+    <script src='hud.js'></script>
     <script src='signal.js'></script>
     <script src='pathfinder.js'></script>
     <script src='config.js'></script>
@@ -30,8 +31,8 @@ var game = new Phaser.Game(WINDOW_WIDTH, WINDOW_HEIGHT, Phaser.AUTO, 'phaser-exa
 var zooming = false;
 var zoomDirection = '';
 
-
-var worldScale = 0.4;
+var initial_world_scale = INITIAL_WORLD_SCALE;
+var worldScale = INITIAL_WORLD_SCALE;
 var minScale = Math.max(WINDOW_WIDTH / MAP_WIDTH, WINDOW_HEIGHT/MAP_HEIGHT) * 1.5;
 var maxScale = 0.6;
 
@@ -43,6 +44,7 @@ var mooples;
 var tribe1;
 var tribe2;
 var units;
+var hud;
 
 var focused;
 var clickSignal;
@@ -70,6 +72,8 @@ function preload ()
   // game.load.spritesheet('player', 'data/dude.png', 32, 48)
   game.load.image('worker1', 'data/kenney_medievalrtspack/PNG/Retina/Unit/medievalUnit_01.png')//, 32, 48)
   game.load.image('fighter1', 'data/kenney_medievalrtspack/PNG/Retina/Unit/medievalUnit_03.png', 64,64)//, 32, 48)
+  game.load.image('berry_icon', 'data/kenney_medievalrtspack/PNG/Retina/Unit/medievalUnit_02.png', 32,32)//, 32, 48)
+
 
   game.load.image('worker2', 'data/kenney_medievalrtspack/PNG/Retina/Unit/medievalUnit_07.png')//, 32, 48)
   game.load.image('house_simple', 'data/kenney_medievalrtspack/PNG/Retina/Structure/medievalStructure_17.png', 128,128)//, 32, 48)
@@ -79,7 +83,7 @@ function preload ()
   game.time.advancedTiming = true;
 }
 
-
+var t;
 
 
 function moveplayer(){
@@ -116,11 +120,17 @@ function create ()
   pathfinder.setGrid(map.layers[0].data, gamemap.walkables);
   pathfinder._easyStar.enableDiagonals();
   // pathfinder = game.plugins.add(new Pathfinder(map));
-
   // pathfinder._easyStar.enableCornerCutting();
 
-  var t = game.add.text(200, 500, "this text is fixed to the camera", { font: "32px Arial", fill: "#ffffff", align: "center" });
+  // HUD
+  hud = game.plugins.add(new HUD(game, game.world));
+
+
+  // t = game.add.text(100, 100, "this text is fixed to the camera", { font: "32px Arial", fill: "#ffffff", align: "center" });
+  // t.x0 = 100;
+  // t.y0 = 100;
   // t.fixedToCamera = false;
+  // t.setScaleMinMax(1,1,1,1);
   // t.cameraOffset.setTo(200, 500);
 
   // ADD UNITS
@@ -396,11 +406,15 @@ function update() {
   tribe2.sort('y', Phaser.Group.SORT_ASCENDING);
 
 
+
+
   // ZOOMING v2
   if (zooming) {
     worldScale = Phaser.Math.clamp(worldScale, minScale, maxScale);
 
     game.world.scale.set(worldScale);
+    // t.scale.set(1);
+    // t.worldPosition.setTo(100,100)
 
     // Pivot map such that zooming seems to be from center
     if ((worldScale>minScale) & (worldScale<maxScale)) {
@@ -408,12 +422,20 @@ function update() {
       let s = 15;
       // s = s*200;
       if(zoomDirection == 'out'){
-        game.world.pivot.y += pivotBoundY(-s);
-        game.world.pivot.x += pivotBoundX(-s);
+        pivotY = pivotBoundY(-s);
+        pivotX = pivotBoundX(-s);
+        game.world.pivot.y += pivotY;
+        game.world.pivot.x += pivotX;
+        // t.pivot.y -= pivotY;
+        // t.pivot.x -= pivotX;
       }
       else if (zoomDirection == 'in'){
-        game.world.pivot.y += pivotBoundY(+s);
-        game.world.pivot.x += pivotBoundX(+s);
+        pivotY = pivotBoundY(+s);
+        pivotX = pivotBoundX(+s);
+        game.world.pivot.y += pivotY;
+        game.world.pivot.x += pivotX;
+        // t.pivot.y -= pivotY;
+        // t.pivot.x -= pivotX;
       }
     }
     zooming=false;
@@ -424,24 +446,43 @@ function update() {
   if (cursors.up.isDown)
   {
       // game.camera.y -= SCROLL_SPEED;
-      game.world.pivot.y += pivotBoundY(-SCROLL_SPEED);
+      pivot = pivotBoundX(-SCROLL_SPEED);
+      game.world.pivot.y += pivot;
+      // t.pivot.y -= pivot;
   }
   else if (cursors.down.isDown)
   {
       // game.camera.y += SCROLL_SPEED;
-      game.world.pivot.y += pivotBoundY(+SCROLL_SPEED);
+      pivot = pivotBoundX(+SCROLL_SPEED);
+      game.world.pivot.y += pivot;
+      // t.pivot.y -= pivot;
+
   }
 
   if (cursors.left.isDown)
   {
       // game.camera.x -= SCROLL_SPEED;
-      game.world.pivot.x += pivotBoundX(-SCROLL_SPEED);
+      pivot = pivotBoundX(-SCROLL_SPEED);
+      game.world.pivot.x += pivot;
+      // t.pivot.x -= pivot;
+
   }
   else if (cursors.right.isDown)
   {
       // game.camera.x += SCROLL_SPEED;
-      game.world.pivot.x += pivotBoundX(+SCROLL_SPEED);
+      pivot = pivotBoundX(+SCROLL_SPEED);
+      game.world.pivot.x += pivot;
+      // t.pivot.x -= pivot;
+
   }
+
+  // Update HUD elements position
+  hud.resetPositions();
+  hud.elements.berries_stat.text = "Berries: " + hq1.berrycount;
+  // t.pivot.setTo(-game.world.pivot.x, -game.world.pivot.y);
+  // t.reset(t.x0/worldScale,t.x0/worldScale);
+
+
 
 }
 
@@ -449,11 +490,12 @@ function update() {
 
 
 function render() {
-    game.debug.text(game.time.fps || '--', 2, 14, "#00ff00");
-    game.debug.cameraInfo(game.camera, 100, 32);
-    game.debug.inputInfo(500, 32);
-    game.debug.text("Time until event: " + game.time.events.duration.toFixed(0), 32, 200);
+    // game.debug.text(game.time.fps || '--', 2, 14, "#00ff00");
+    // game.debug.cameraInfo(game.camera, 100, 32);
+    // game.debug.inputInfo(500, 32);
+    // game.debug.text("Time until event: " + game.time.events.duration.toFixed(0), 32, 200);
     // game.debug.text(Phaser.Physics.Arcade.body.renderBodyInfo(player.body, 100, 100))
+    // game.debug.physicsGroup(tribe1);
 }
 
 </script>

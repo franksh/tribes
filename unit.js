@@ -9,6 +9,7 @@ function Unit (game, x, y, key, tribe=1) {
   game.physics.arcade.enable(this);
   this.body.collideWorldBounds = false;
   this.body.onCollide = new Phaser.Signal();
+  this.body.setSize(32,32,32,32);
   this.inputEnabled = true;
   this.events.onInputDown.add(clickSignal.clickedUnit, this);
 
