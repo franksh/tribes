@@ -45,6 +45,7 @@ var tribe1;
 var tribe2;
 var units;
 var hud;
+var fog;
 
 var focused;
 var clickSignal;
@@ -194,6 +195,17 @@ function create ()
   createTimer();
   game.gameTimer = game.time.events.loop(GAME_SPEED,
                   function(){this.updateTimer()})
+
+
+  //	A mask is a Graphics object
+  // var mask_group = game.add.group();
+  fog = game.add.graphics(0, 0);
+  // var mask = Phaser.Graphics(game, 0, 0,);
+  // mask_group.add(mask);
+
+  //	Shapes drawn to the Graphics object must be filled.
+  //	Here we'll draw a circle
+
 
 }
 
@@ -395,6 +407,10 @@ function updateTimer() {
   result += (seconds < 10) ? ":0" + seconds : ":" + seconds;
   this.timeLabel.text = result;
 
+
+
+
+
 }
 
 
@@ -406,6 +422,21 @@ function update() {
   tribe2.sort('y', Phaser.Group.SORT_ASCENDING);
 
 
+  // Mask Fog of war
+  fog.clear()
+  // fog.lineStyle(150,0xffffff,0.5)
+  fog.beginFill(0xffffff, 0.5);
+
+  let pos = hq1.position;
+  fog.drawCircle(pos.x, pos.y, 2000);
+  for (moople in tribe1.children) {
+    let pos = tribe1.children[moople].position;
+    fog.drawCircle(pos.x, pos.y, 500);
+  }
+  fog.endFill();
+  //	And apply it to the Sprite
+  layer.mask = fog;
+  tribe1.mask = fog;
 
 
   // ZOOMING v2
@@ -490,7 +521,7 @@ function update() {
 
 
 function render() {
-    // game.debug.text(game.time.fps || '--', 2, 14, "#00ff00");
+    game.debug.text(game.time.fps || '--', 2, 14, "#00ff00");
     // game.debug.cameraInfo(game.camera, 100, 32);
     // game.debug.inputInfo(500, 32);
     // game.debug.text("Time until event: " + game.time.events.duration.toFixed(0), 32, 200);
