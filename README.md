@@ -1,7 +1,6 @@
 # Tribes
 
-![Alt Text](https://github.com/franksh/tribes/raw/master/assets/screenshot.gif)
-<!-- .element style="width: 50;" -->
+![Tribes Screenshot](https://github.com/franksh/tribes/raw/master/assets/screenshot.gif) <!-- .element width="50%" -->
 
 Tribes is a small real-time strategy game I'm working on.
 
