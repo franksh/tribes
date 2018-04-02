@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <script src="node_modules/phaser-ce/build/phaser.js"></script>
-    <script src="node_modules/simplex-noise/simplex-noise.js"></script>
-    <script src="node_modules/phaser_plugin_pathfinding/bin/phaser_pathfinding-0.2.0.js"></script>
-    <script src="node_modules/jquery/dist/jquery.js"></script>
-    <script src='map.js'></script>
-    <script src='unit.js'></script>
-    <script src='building.js'></script>
-    <script src='util.js'></script>
-    <script src='hud.js'></script>
-    <script src='signal.js'></script>
-    <script src='pathfinder.js'></script>
-    <script src='config.js'></script>
+    <script src="js/node_modules/phaser-ce/build/phaser.js"></script>
+    <script src="js/node_modules/simplex-noise/simplex-noise.js"></script>
+    <script src="js/node_modules/phaser_plugin_pathfinding/bin/phaser_pathfinding-0.2.0.js"></script>
+    <script src="js/node_modules/jquery/dist/jquery.js"></script>
+    <script src='js/map.js'></script>
+    <script src='js/unit.js'></script>
+    <script src='js/building.js'></script>
+    <script src='js/util.js'></script>
+    <script src='js/hud.js'></script>
+    <script src='js/signal.js'></script>
+    <script src='js/pathfinder.js'></script>
+    <script src='js/config.js'></script>
 
 </head>
 <body>
@@ -154,7 +154,7 @@ function create ()
   // unit = new Unit(game, 0, 0, 'worker');
   // game.world.add(unit);
   tribe1 = game.add.physicsGroup();
-  for (var i=0; i<20; i++){
+  for (var i=0; i<30; i++){
     x = game.rnd.between(0, MAP_WIDTH_TILES) * 64;
     y = game.rnd.between(0, MAP_HEIGHT_TILES) * 64;
     // x = (MAP_WIDTH_TILES-1)*64;
@@ -426,20 +426,22 @@ function update() {
 
 
   // Mask Fog of war
-  fog.clear()
-  // fog.lineStyle(150,0xffffff,0.5)
-  fog.beginFill(0xffffff, 0.5);
-
-  let pos = hq1.position;
-  fog.drawCircle(pos.x, pos.y, 2000);
-  for (moople in tribe1.children) {
-    let pos = tribe1.children[moople].position;
-    fog.drawCircle(pos.x, pos.y, 500);
+  if (FOG_OF_WAR) {
+    fog.clear()
+    // fog.lineStyle(150,0xffffff,0.5)
+    fog.beginFill(0xffffff, 0.5);
+    let pos = hq1.position;
+    fog.drawCircle(pos.x, pos.y, 2000);
+    for (moople in tribe1.children) {
+      let pos = tribe1.children[moople].position;
+      fog.drawCircle(pos.x, pos.y, 500);
+    }
+    fog.endFill();
+    //	And apply it to the Sprite
+    layer.mask = fog;
+    tribe1.mask = fog;
   }
-  fog.endFill();
-  //	And apply it to the Sprite
-  layer.mask = fog;
-  tribe1.mask = fog;
+
 
 
   // ZOOMING v2
