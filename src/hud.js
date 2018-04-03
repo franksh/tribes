@@ -73,13 +73,13 @@ HUD.prototype.createElements = function (elements_data) {
 
       // Create sprite and save
       if (element_parameters.type == "icon") {
-        element = new Phaser.Sprite(game, position.x, position.y, properties.texture);
+        element = new Phaser.Sprite(this.game, position.x, position.y, properties.texture);
         element.anchor.set(0.5,0.5);
         // element.setScaleMinMax(0.2,0.2,0.2,0.2);
         // element.scale.setTo(0.2);
       }
       else if (element_parameters.type == "stat") {
-        element = new Phaser.Text(game, position.x, position.y, "Test", properties.text_style);
+        element = new Phaser.Text(this.game, position.x, position.y, "Test", properties.text_style);
 
       }
       element.anchor.set(0.5,0.5);

@@ -1,6 +1,8 @@
-$.getScript("js/node_modules/simplex-noise/simplex-noise.js");
+$.getScript("src/node_modules/simplex-noise/simplex-noise.js");
 
-function GameMap () {
+var Tribes = Tribes || {};
+
+Tribes.GameMap = function () {
 
   Phaser.Tilemap.call(this);
 
@@ -30,10 +32,10 @@ function GameMap () {
 
 }
 
-GameMap.prototype = Object.create(Phaser.Tilemap.prototype);
-GameMap.prototype.constructor = Phaser.Tilemap;
+Tribes.GameMap.prototype = Object.create(Phaser.Tilemap.prototype);
+Tribes.GameMap.prototype.constructor = Phaser.Tilemap;
 
-GameMap.prototype.generate_map = function(game, width_tiles, height_tiles) {
+Tribes.GameMap.prototype.generate_map = function(game, width_tiles, height_tiles) {
   /* Generates a Tilemap */
   let elevation_map = this.create_noise_map(MAP_WIDTH_TILES, MAP_HEIGHT_TILES, 0.9);
   let moisture_map = this.create_noise_map(MAP_WIDTH_TILES, MAP_HEIGHT_TILES, 1.0, 1.5);
@@ -67,11 +69,11 @@ GameMap.prototype.generate_map = function(game, width_tiles, height_tiles) {
 }
 
 
-GameMap.prototype.noise = function(nx, ny) {
+Tribes.GameMap.prototype.noise = function(nx, ny) {
   return this.gen.noise2D(nx, ny) / 2 + 0.5;
 }
 
-GameMap.prototype.create_noise_map = function (width, height, freq=1, pow=3){
+Tribes.GameMap.prototype.create_noise_map = function (width, height, freq=1, pow=3){
   // See tutorial https://www.redblobgames.com/maps/terrain-from-noise/
   // Set new random seed;
   // freq: The frequency of the noise
@@ -96,7 +98,7 @@ GameMap.prototype.create_noise_map = function (width, height, freq=1, pow=3){
   return data;
 }
 
-GameMap.prototype.get_biome = function(e, m){
+Tribes.GameMap.prototype.get_biome = function(e, m){
 
   if (e > 2.1) {
     if (m > 0.7) return 'snow_a';
@@ -141,7 +143,7 @@ GameMap.prototype.get_biome = function(e, m){
 
 }
 
-GameMap.prototype.getCSVMap = function(elevation_map, moisture_map) {
+Tribes.GameMap.prototype.getCSVMap = function(elevation_map, moisture_map) {
   /* Generate the map from noise maps
   Converts values in tiles, according to biome map
   Returns csv map with tile inidcies
@@ -178,23 +180,23 @@ GameMap.prototype.getCSVMap = function(elevation_map, moisture_map) {
     return data;
 }
 
-GameMap.prototype.getTileAtXY = function(x, y) {
+Tribes.GameMap.prototype.getTileAtXY = function(x, y) {
   col = layer.getTileX(Math.abs(x));
   row = layer.getTileY(Math.abs(y));
-  tile = gamemap.map.layers[0].data[row][col];
+  tile = this.map.layers[0].data[row][col];
   return tile;
 }
 
-Phaser.Tilemap.prototype.is_tile_accessible = function(row, col) {
-  tile_id = gamemap.map.layers[0].data[row][col].index
-  return gamemap.walkables.includes(tile_id);
+Tribes.GameMap.prototype.is_tile_accessible = function(row, col) {
+  tile_id = this.map.layers[0].data[row][col].index
+  return this.walkables.includes(tile_id);
 }
 
-Phaser.Tilemap.prototype.getRandomAccessibleTile = function() {
+Tribes.GameMap.prototype.getRandomAccessibleTile = function() {
   let valid_tile_found = false;
   while (!valid_tile_found) {
-    row = game.rnd.between(0, MAP_HEIGHT_TILES-1);
-    col = game.rnd.between(0, MAP_WIDTH_TILES-1);
+    row = this.game.rnd.between(0, MAP_HEIGHT_TILES-1);
+    col = this.game.rnd.between(0, MAP_WIDTH_TILES-1);
     // console.log(row, col)
     if (this.is_tile_accessible(row, col)) {
       valid_tile_found = true;
@@ -203,7 +205,7 @@ Phaser.Tilemap.prototype.getRandomAccessibleTile = function() {
   return {row: row, col: col}
 }
 
-Phaser.Tilemap.prototype.getRandomAccessiblePoint = function() {
+Tribes.GameMap.prototype.getRandomAccessiblePoint = function() {
   let valid_tile_found = false;
   while (!valid_tile_found) {
     row = game.rnd.between(0, MAP_HEIGHT_TILES-1);
@@ -224,7 +226,7 @@ Input:
 - point: poistion around with to look
 - Range: In pixel
 */
-Phaser.Tilemap.prototype.getRandomAccessiblePointInRange = function(point, range) {
+Tribes.GameMap.prototype.getRandomAccessiblePointInRange = function(point, range) {
 
   // console.log(point);
   let valid_tile_found = false;
@@ -254,7 +256,7 @@ Phaser.Tilemap.prototype.getRandomAccessiblePointInRange = function(point, range
   return target_position;
 }
 
-Phaser.Tilemap.prototype.check_tile_in_range = function(point, tileid, range) {
+Tribes.GameMap.prototype.check_tile_in_range = function(point, tileid, range) {
 
   let candidates = layer.getTiles(point.x-(range/2), point.y-(range/2), range, range)
   for (var i=0; i<candidates.length; i++){

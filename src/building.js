@@ -22,6 +22,6 @@ Building.prototype = Object.create(Phaser.Sprite.prototype);
 Building.prototype.constructor = Phaser.Sprite;
 
 Building.prototype.setXYVicinity = function(point, range) {
-  position = gamemap.map.getRandomAccessiblePointInRange(point, range)
+  position = this.game.gamemap.getRandomAccessiblePointInRange(point, range)
   this.position = position;
 }

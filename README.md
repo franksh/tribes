@@ -2,7 +2,7 @@
 
 ![Tribes Screenshot](https://github.com/franksh/tribes/raw/master/assets/screenshot.gif) <!-- .element width="50%" -->
 
-Tribes is a small real-time strategy game I'm working on.
+Tribes is a small real-time strategy game (in development).
 
 You control a small tribe of people that gather resources, expand their
 territory and compete with other tribes.

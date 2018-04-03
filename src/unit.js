@@ -39,14 +39,14 @@ Unit.prototype.constructor = Phaser.Sprite;
 */
 Unit.prototype.setXYrandom = function() {
 
-  position = gamemap.map.getRandomAccessiblePoint();
+  position = gamemap.getRandomAccessiblePoint();
   this.position = position;
   // this.body.moveTo(position.x, position.y);
 }
 
 Unit.prototype.setXYVicinity = function(point, range) {
 
-  position = gamemap.map.getRandomAccessiblePointInRange(point, range)
+  position = this.game.gamemap.getRandomAccessiblePointInRange(point, range)
   this.position = position;
 }
 
@@ -60,7 +60,7 @@ Unit.prototype.update = function() {
 
 Unit.prototype.updateStatus = function() {
 
-  let tile = gamemap.getTileAtXY(this.centerX, this.centerY);
+  let tile = this.game.gamemap.getTileAtXY(this.centerX, this.centerY);
   let tileid = tile.index;
 
   // Check if berries present, if yes collect
@@ -81,9 +81,9 @@ Unit.prototype.updateTask = function () {
     if (this.task == 'berries') {
       // No berries known
       if (this.berries_location == null) {
-        let tileid = gamemap.tile_texture_ids['berry_a'];
+        let tileid = this.game.gamemap.tile_texture_ids['berry_a'];
         // console.log("searching berries");
-        target_pos = gamemap.map.check_tile_in_range(this.position, tileid, 500);
+        target_pos = this.game.gamemap.check_tile_in_range(this.position, tileid, 500);
         if (target_pos) {
           // console.log("found berries!", target_pos);
           this.berries_location = target_pos;
@@ -169,12 +169,12 @@ Unit.prototype.move_to = function (target_position) {
 }
 
 Unit.prototype.move_to_random = function () {
-  target_position = gamemap.map.getRandomAccessiblePoint();
+  target_position = this.game.gamemap.getRandomAccessiblePoint();
   this.move_to(target_position);
 }
 
 Unit.prototype.move_to_random_in_range = function (range) {
-  target_position = gamemap.map.getRandomAccessiblePointInRange(this.position, range);
+  target_position = this.game.gamemap.getRandomAccessiblePointInRange(this.position, range);
   // console.log(target_position);
   this.move_to(target_position);
 }
