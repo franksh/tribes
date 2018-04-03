@@ -23,58 +23,27 @@
 
 <script>
 
-// GAME V1
-var game = new Phaser.Game(WINDOW_WIDTH, WINDOW_HEIGHT, Phaser.AUTO, 'phaser-example',
-                          { preload: preload,
-                            create: create,
-                            // Manual update function
-                            update: update,
-                            updateTimer: updateTimer,
-                            createTimer: createTimer,
-                            render: render });
+var Tribes = Tribes || {};
+
+var game;
+
+Tribes.Game = function () {
+  Phaser.Game.call(this, WINDOW_WIDTH, WINDOW_HEIGHT, Phaser.AUTO, 'gameArea');
+  this.state.add('Boot', Tribes.BootState, false);
+  this.state.add('Preload', Tribes.PreloadState, false);
+  this.state.add('World', Tribes.WorldState)
+
+  this.state.start('Boot');
+}
+
+Tribes.Game.prototype = Object.create(Phaser.Game.prototype);
+Tribes.Game.prototype.constructor = Phaser.Game;
 
 
-// GAME V2
-// var game;
-//
-// window.onload = function() {
-//   game = new Phaser.Game(WINDOW_WIDTH, WINDOW_HEIGHT, Phaser.AUTO, "");
-//   game.state.add("Tribes", Tribes);
-//   game.state.start("Tribes");
-// }
-//
-// var Tribes = function(game) {};
-//
-// Tribes.prototype = {
-//   preload: preload,
-//   create: create,
-//   // Manual update function
-//   update: update,
-//   updateTimer: updateTimer,
-//   createTimer: createTimer,
-//   render: render
-// }
+window.onload = function() {
+  game = new Tribes.Game();
+}
 
-
-// var Tribes = Tribes || {};
-//
-// Tribes.Game = function () {
-//   Phaser.Game.call(this, WINDOW_WIDTH, WINDOW_HEIGHT, Phaser.AUTO, 'gameArea');
-//   this.state.add('Boot', Tribes.BootState, false);
-//   this.state.add('Preload', Tribes.PreloadState, false);
-//   this.state.add('World', Tribes.WorldState)
-//
-//   this.state.start('Boot');
-// }
-//
-// Tribes.Game.prototype = Object.create(Phaser.Game.prototype);
-// Tribes.Game.prototype.constructor = Phaser.Game;
-//
-//
-// window.onload = function() {
-//   var game = new Tribes.Game();
-// }
-//
 
 
 
@@ -87,7 +56,7 @@ var worldScale = INITIAL_WORLD_SCALE;
 var minScale = Math.max(WINDOW_WIDTH / MAP_WIDTH, WINDOW_HEIGHT/MAP_HEIGHT) * 1.5;
 var maxScale = 0.6;
 
-var gamemap;
+// var gamemap;
 var layer;
 var pathfinder;
 var player;
@@ -97,6 +66,8 @@ var tribe2;
 var units;
 var hud;
 var fog;
+
+var timeLabel;
 
 var focused;
 var clickSignal;
@@ -111,31 +82,8 @@ var diag_dist = Math.sqrt((64*64)+(64*64))
 
 function preload ()
 {
-  // Load assets
-  // this.load.setBaseURL('http://labs.phaser.io');
-
-  // this.load.image('player', 'data/start.png');
-  // game.load.tilemap('map_3', 'map_3.json', null, Phaser.Tilemap.TILED_JSON);
-  // game.load.image('tiles', 'data/tile_set_3.png');
-  game.load.image('tiles', 'assets/tiles/medieval_tilesheet copy.png')
-  // game.load.image('tiles', 'data/kenney_medievalrtspack/Tilesheet/RTS_medieval@2.png')
 
 
-  // game.load.spritesheet('player', 'data/dude.png', 32, 48)
-  // game.load.image('worker1', 'data/kenney_medievalrtspack/PNG/Retina/Unit/medievalUnit_01.png')//, 32, 48)
-  // game.load.image('fighter1', 'data/kenney_medievalrtspack/PNG/Retina/Unit/medievalUnit_03.png', 64,64)//, 32, 48)
-  // game.load.image('berry_icon', 'data/kenney_medievalrtspack/PNG/Retina/Unit/medievalUnit_02.png', 32,32)//, 32, 48)
-  game.load.image('worker1', 'assets/units/medievalUnit_01.png')//, 32, 48)
-  game.load.image('fighter1', 'assets/units/medievalUnit_03.png', 64,64)//, 32, 48)
-  game.load.image('berry_icon', 'assets/units/medievalUnit_02.png', 32,32)//, 32, 48)
-
-
-  game.load.image('worker2', 'assets/units/medievalUnit_07.png')//, 32, 48)
-  game.load.image('house_simple', 'assets/structures/medievalStructure_17.png', 128,128)//, 32, 48)
-
-  // game.load.onLoadComplete.add(loadComplete, this)
-
-  game.time.advancedTiming = true;
 }
 
 var t;
@@ -148,117 +96,6 @@ function moveplayer(){
 function create ()
 {
 
-  // Physics
-  game.physics.startSystem(Phaser.Physics.ARCADE);
-
-  // KEYS, Input
-  cursors = game.input.keyboard.createCursorKeys();
-  // keyA = game.input.keyboard.addKey(Phaser.Keyboard.A);
-  // keyA.onDown.add(moveplayer, this);
-  // for zoomingo n mouse wheel
-  game.input.mouse.mouseWheelCallback = mouseWheel;
-  // Mouse Hover
-  game.input.addMoveCallback(mouseHover, this);
-  // Mouse Click
-  clickSignal = new ClickSignal();
-  game.input.onDown.add(clickSignal.clicked, this);
-
-  // MAP GENERATION
-  gamemap = new GameMap()
-  let maplayer = gamemap.generate_map(game);
-  map = maplayer[0];
-  layer = maplayer[1];
-
-
-  // Pathfinding
-  pathfinder = game.plugins.add(new Pathfinder(game, map));
-  pathfinder.setGrid(map.layers[0].data, gamemap.walkables);
-  pathfinder._easyStar.enableDiagonals();
-  // pathfinder = game.plugins.add(new Pathfinder(map));
-  // pathfinder._easyStar.enableCornerCutting();
-
-  // HUD
-  hud = game.plugins.add(new HUD(game, game.world));
-
-
-  // t = game.add.text(100, 100, "this text is fixed to the camera", { font: "32px Arial", fill: "#ffffff", align: "center" });
-  // t.x0 = 100;
-  // t.y0 = 100;
-  // t.fixedToCamera = false;
-  // t.setScaleMinMax(1,1,1,1);
-  // t.cameraOffset.setTo(200, 500);
-
-  // ADD UNITS
-  hq1 = new Building(game, 2000, 1000, 'house_simple', tribe=1)
-  hq1.setXYVicinity(hq1.position, 1000);
-  game.world.add(hq1);
-
-  hq2 = new Building(game, 2000, 3000, 'house_simple', tribe=2)
-  hq2.setXYVicinity(hq2.position, 1000);
-  game.world.add(hq2);
-
-  player = new Unit(game, 64, 64, 'fighter1')
-  game.world.add(player);
-  player.setXYVicinity(hq1.position, 2000);
-  player.home = hq1;
-
-  // unit = new Unit(game, 0, 0, 'worker');
-  // game.world.add(unit);
-  tribe1 = game.add.physicsGroup();
-  for (var i=0; i<30; i++){
-    x = game.rnd.between(0, MAP_WIDTH_TILES) * 64;
-    y = game.rnd.between(0, MAP_HEIGHT_TILES) * 64;
-    // x = (MAP_WIDTH_TILES-1)*64;
-    // x = scaleDist(x);
-    // y = scaleDist(y);
-    let moople = new Unit(game, x, y, 'worker1', tribe=1);
-    // moople.setXYrandom();
-    moople.setXYVicinity(hq1.position, 2000);
-    moople.home = hq1;
-    // console.log(moople);
-    tribe1.add(moople);
-    // game.physics.arcade.enable(moople);
-    // var moople = mooples.create(x, y, 'worker')
-  }
-
-  tribe2 = game.add.physicsGroup();
-  for (var i=0; i<20; i++){
-    x = game.rnd.between(0, MAP_WIDTH_TILES) * 64;
-    y = game.rnd.between(0, MAP_HEIGHT_TILES) * 64;
-    // x = (MAP_WIDTH_TILES-1)*64;
-    // x = scaleDist(x);
-    // y = scaleDist(y);
-    let moople = new Unit(game, x, y, 'worker2', tribe=2);
-    // moople.setXYrandom();
-    moople.setXYVicinity(hq2.position, 2000);
-    moople.home = hq2;
-    // console.log(moople);
-    tribe2.add(moople);
-    // game.physics.arcade.enable(moople);
-    // var moople = mooples.create(x, y, 'worker')
-  }
-
-  // Set Camera
-  game.world.setBounds(0, 0, MAP_WIDTH, MAP_HEIGHT);
-  game.world.scale.set(worldScale);
-
-  // Time
-
-  game.startTime = new Date();
-  game.timeElapsed = 0;
-  createTimer();
-  game.gameTimer = game.time.events.loop(GAME_SPEED,
-                  function(){this.updateTimer()})
-
-
-  //	A mask is a Graphics object
-  // var mask_group = game.add.group();
-  fog = game.add.graphics(0, 0);
-  // var mask = Phaser.Graphics(game, 0, 0,);
-  // mask_group.add(mask);
-
-  //	Shapes drawn to the Graphics object must be filled.
-  //	Here we'll draw a circle
 
 
 }
@@ -286,23 +123,10 @@ function mouseHover(){
   // game.physics.arcade.getObjectsAtLocation
 }
 
-function movePlayer(){
-  // player.body.moveTo(1000, 64, Phaser.ANGLE_RIGHT);
-  game.add.sprite(
-        // scaleDist((21*64)),
-        2*64,
-        2*64,
-        // scaleDist((0*64)),
-         'fighter');
-}
 
-function createTimer() {
-  this.timeLabel = this.game.add.text(200, 200, "00:00", {font: "100px Arial", fill: "#fff"});
-  this.timeLabel.anchor.setTo(0.5, 0);
-  this.timeLabel.align = 'center';
-}
 
-function updateTimer() {
+
+Tribes.Game.prototype.updateTimer = function () {
 
   // USE THIS WITH CALLBACK TO HANDLE COLLISIONS
   // game.physics.arcade.collide(mooples,mooples, function(){console.log("collision");});
@@ -379,70 +203,6 @@ function updateTimer() {
           moople.alpha = 1;
         }
       }
-    // MOVEMENT
-    // if (moople.target==false) {
-    //   if (Math.random()<0.1) {
-    //     if (Math.random()<0.5) {
-    //       // let mtile = map.getTileWorldXY(moople.position.x, moople.position.y);
-    //       // var easttile = map.getTileWorldXY(mtile.worldX + 64, mtile.worldY);
-    //       // if (easttile == null){
-    //       //   easttile = map.getTileWorldXY(mtile.worldX - 64, mtile.worldY);
-    //       //   // console.log(eatstile);
-    //       // }
-    //       //
-    //       // // easttile = map.getTileRight(layer, mtile.x, mtile.y)
-    //       // moople.target = [easttile.worldX, easttile.worldY];
-    //       // // moople.target = [moople.position.x + 64, moople.position.y];
-    //       x = Math.floor((moople.position.x)/64)*64;
-    //       y = Math.floor((moople.position.y+64)/64)*64;
-    //       moople.target = [x, y];
-    //     }
-    //     else {
-    //       // x = Math.floor((moople.position.x - 64)/64)*64;
-    //       // y = Math.floor((moople.position.y)/64)*64;
-    //       // moople.target = [x, y];
-    //       // moople.target = [moople.position.x - 64, moople.position.y + 64];
-    //     }
-    //   }
-    // }
-    // else if (!moople.body.isMoving) {
-    //   // dx = moople.position.x - moople.target[0];
-    //   // dy = moople.position.y - moople.target[1];
-    //   let angle = game.physics.arcade.angleToXY(moople, moople.target[0], moople.target[1]);
-    //   let dist = game.physics.arcade.distanceToXY(moople, moople.target[0], moople.target[1]);
-    //   // dist = Math.sqrt((dx*dx) + (dy*dy));
-    //   if (dist>3) {
-    //     // moople.body.moveTo(300, dist, angle)
-    //     game.physics.arcade.moveToXY(moople, moople.target[0], moople.target[1])
-    //   }
-    //   else if (dist<=3) {
-    //     moople.target=false;
-    //     // moople.body.stop()
-    //     moople.body.stop();
-    //   }
-    // }
-
-
-    // OlD MOVE LOGIC
-    // if (!moople.body.isMoving) {
-    //   if (Math.random()<0.01) {
-    //   dir_id = Math.floor(Math.random()*4);
-    //   // let distance = (dir_id>3) ? diag_dist : 64;
-    //   distance = 64
-    //   // distance = scaleDist(distance);
-    //   let direction = directions[ dir_id ];
-    //   // moople.body.moveTo(500, distance, direction);
-    //   x = moople.position.x;
-    //   y = moople.position.y;
-    //
-    //   moople.body.moveTo(500, scaleDist(64), 0);
-    //
-    //
-    //   // game.physics.arcade.moveToXY(moople, x, y, 300)
-    //   // moople.body.moveToXY(64*99,64*79);
-    //   }
-    // }
-
 
   // Update Timer
   var currentTime = new Date();
@@ -453,8 +213,8 @@ function updateTimer() {
   this.timeElapsed = Math.abs(timeDifference / 1000);
   // console.log(this.timeElapsed);
   //Convert seconds into minutes and seconds
-  var minutes = Math.floor(timeElapsed / 60);
-  var seconds = Math.floor(timeElapsed) - (60 * minutes);
+  var minutes = Math.floor(this.timeElapsed / 60);
+  var seconds = Math.floor(this.timeElapsed) - (60 * minutes);
   //Display minutes, add a 0 to the start if less than 10
   var result = (minutes < 10) ? "0" + minutes : minutes;
   //Display seconds, add a 0 to the start if less than 10
@@ -462,128 +222,14 @@ function updateTimer() {
   this.timeLabel.text = result;
 
 
-
-
-
-}
-
-
-function update() {
-  // This updates super fast
-  // Used for controls, camera, etc.
-
-  tribe1.sort('y', Phaser.Group.SORT_ASCENDING);
-  tribe2.sort('y', Phaser.Group.SORT_ASCENDING);
-
-
-  // Mask Fog of war
-  if (FOG_OF_WAR) {
-    fog.clear()
-    // fog.lineStyle(150,0xffffff,0.5)
-    fog.beginFill(0xffffff, 0.5);
-    let pos = hq1.position;
-    fog.drawCircle(pos.x, pos.y, 2000);
-    for (moople in tribe1.children) {
-      let pos = tribe1.children[moople].position;
-      fog.drawCircle(pos.x, pos.y, 500);
-    }
-    fog.endFill();
-    //	And apply it to the Sprite
-    layer.mask = fog;
-    tribe1.mask = fog;
-  }
-
-
-
-  // ZOOMING v2
-  if (zooming) {
-    worldScale = Phaser.Math.clamp(worldScale, minScale, maxScale);
-
-    game.world.scale.set(worldScale);
-    // t.scale.set(1);
-    // t.worldPosition.setTo(100,100)
-
-    // Pivot map such that zooming seems to be from center
-    if ((worldScale>minScale) & (worldScale<maxScale)) {
-      // let s = Math.abs(worldScale - (maxScale+minScale)/2);
-      let s = 15;
-      // s = s*200;
-      if(zoomDirection == 'out'){
-        pivotY = pivotBoundY(-s);
-        pivotX = pivotBoundX(-s);
-        game.world.pivot.y += pivotY;
-        game.world.pivot.x += pivotX;
-        // t.pivot.y -= pivotY;
-        // t.pivot.x -= pivotX;
-      }
-      else if (zoomDirection == 'in'){
-        pivotY = pivotBoundY(+s);
-        pivotX = pivotBoundX(+s);
-        game.world.pivot.y += pivotY;
-        game.world.pivot.x += pivotX;
-        // t.pivot.y -= pivotY;
-        // t.pivot.x -= pivotX;
-      }
-    }
-    zooming=false;
-  }
-
-
-  // CAMERA MOVEMENTS
-  if (cursors.up.isDown)
-  {
-      // game.camera.y -= SCROLL_SPEED;
-      pivot = pivotBoundY(-SCROLL_SPEED);
-      game.world.pivot.y += pivot;
-      // t.pivot.y -= pivot;
-  }
-  else if (cursors.down.isDown)
-  {
-      // game.camera.y += SCROLL_SPEED;
-      pivot = pivotBoundY(+SCROLL_SPEED);
-      game.world.pivot.y += pivot;
-      // t.pivot.y -= pivot;
-
-  }
-
-  if (cursors.left.isDown)
-  {
-      // game.camera.x -= SCROLL_SPEED;
-      pivot = pivotBoundX(-SCROLL_SPEED);
-      game.world.pivot.x += pivot;
-      // t.pivot.x -= pivot;
-
-  }
-  else if (cursors.right.isDown)
-  {
-      // game.camera.x += SCROLL_SPEED;
-      pivot = pivotBoundX(+SCROLL_SPEED);
-      game.world.pivot.x += pivot;
-      // t.pivot.x -= pivot;
-
-  }
-
-  // Update HUD elements position
-  hud.resetPositions();
-  hud.elements.berries_stat.text = "Berries: " + hq1.berrycount;
-  // t.pivot.setTo(-game.world.pivot.x, -game.world.pivot.y);
-  // t.reset(t.x0/worldScale,t.x0/worldScale);
-
-
-
 }
 
 
 
 
-function render() {
-    game.debug.text(game.time.fps || '--', 2, 14, "#00ff00");
-    // game.debug.cameraInfo(game.camera, 100, 32);
-    // game.debug.inputInfo(500, 32);
-    // game.debug.text("Time until event: " + game.time.events.duration.toFixed(0), 32, 200);
-    // game.debug.text(Phaser.Physics.Arcade.body.renderBodyInfo(player.body, 100, 100))
-    // game.debug.physicsGroup(tribe1);
-}
+
+
+
 
 </script>
 

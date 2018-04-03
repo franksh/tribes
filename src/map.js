@@ -1,4 +1,4 @@
-$.getScript("src/node_modules/simplex-noise/simplex-noise.js");
+// $.getScript("src/node_modules/simplex-noise/simplex-noise.js");
 
 var Tribes = Tribes || {};
 
