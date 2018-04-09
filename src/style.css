@@ -1,0 +1,17 @@
+@font-face {
+  font-family: "kenney-pixel";
+  src:url("../assets/fonts/Kenney_Pixel_Square.ttf");
+}
+
+@font-face {
+  font-family: "kenney-future";
+  src:url("../assets/fonts/Kenney_Future_Narrow.ttf");
+}
+
+
+body {
+  /* Prevent Scrolling  */
+  overflow: hidden;
+
+  font-family:"kenney-pixel";
+}

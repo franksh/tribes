@@ -17,6 +17,7 @@
     <script src='src/states/preload.js'></script>
     <script src='src/states/world.js'></script>
 
+    <link rel='stylesheet' type='text/css' href='src/style.css'>
 
 </head>
 <body>
@@ -57,14 +58,15 @@ var minScale = Math.max(WINDOW_WIDTH / MAP_WIDTH, WINDOW_HEIGHT/MAP_HEIGHT) * 1.
 var maxScale = 0.6;
 
 // var gamemap;
-var layer;
-var pathfinder;
+// var layer;
+// var pathfinder;
 var player;
 var mooples;
 var tribe1;
 var tribe2;
 var units;
-var hud;
+
+// var hud;
 var fog;
 
 var timeLabel;
@@ -160,11 +162,13 @@ Tribes.Game.prototype.updateTimer = function () {
       d = distXY(m, p);
       if ((Math.abs(d[0])<16) & (Math.abs(d[1])<16)){
       moople.alpha = 0.5;
+      moople.tint = "0xffff00";
     }
       // console.log(moople.body);
     }
     else {
       moople.alpha = 1;
+      moople.tint = "0xffffff";
     }
   }
 

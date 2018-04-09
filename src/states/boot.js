@@ -11,6 +11,9 @@ Tribes.BootState.prototype.init = function () {
     //  Unless you specifically know your game needs to support multi-touch I would recommend setting this to 1
     this.input.maxPointers = 1;
 
+    // Maybe fixes scrolling problem?
+    this.scale.compatibility.scrollTo = false;
+
     //  Phaser will automatically pause if the browser tab the game is in loses focus. You can disable that here:
     this.stage.disableVisibilityChange = false;
 

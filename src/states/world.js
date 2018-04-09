@@ -245,7 +245,7 @@ Tribes.WorldState.prototype.update = function () {
 
 
 Tribes.WorldState.prototype.createTimer = function () {
-  this.game.timeLabel = this.game.add.text(200, 200, "00:00", {font: "100px Arial", fill: "#fff"});
+  this.game.timeLabel = this.game.add.text(200, 200, "00:00", {font: "100px kenney-pixel", fill: "#fff"});
   this.game.timeLabel.anchor.setTo(0.5, 0);
   this.game.timeLabel.align = 'center';
 }
@@ -253,6 +253,11 @@ Tribes.WorldState.prototype.createTimer = function () {
 
 Tribes.WorldState.prototype.render = function () {
     game.debug.text(game.time.fps || '--', 2, 14, "#00ff00");
+
+    if (focused!=undefined) {
+        game.debug.spriteBounds(focused, color='#ffff00', filled=false, )
+    }
+
     // game.debug.cameraInfo(game.camera, 100, 32);
     // game.debug.inputInfo(500, 32);
     // game.debug.text("Time until event: " + game.time.events.duration.toFixed(0), 32, 200);

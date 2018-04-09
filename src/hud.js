@@ -21,26 +21,41 @@ HUD.prototype.init = function (game_state, hud_data) {
   this.elements = {};
 
   this.elements_data = {
-    "berries_icon": {
+    "grey_panel": {
       "type": "icon",
       "region": "top_left",
       "x0": 50,
       "y0": 50,
-      "scale": 0.7,
+      "scalex": 1.5,
+      "scaley": 0.7,
       "properties": {
-        texture: "berry_icon",
+        texture: "grey_panel",
+        group: "hud",
+      }
+    },
+    "white_panel": {
+      "type": "icon",
+      "region": "top_left",
+      "x0": 100,
+      "y0": 50,
+      "scalex": 1.0,
+      "scaley": 1.0,
+      "properties": {
+        texture: "white_panel",
         group: "hud",
       }
     },
     "berries_stat": {
       "type": "stat",
-      "x0": 140,
+      "x0": 100,
       "y0": 50,
-      "scale": 1.0,
+      "scalex": 1.0,
+      "scaley": 1.0,
       "properties": {
         stat_to_show: "hq1.berrycount",
         text_style: {
-          "font": "24px Arial",
+          "font": "20px kenney-pixel",
+          // "font": "24px kenney-future",
           "fill": "#FFFFFF",
           "align": "center",
         }
@@ -73,26 +88,36 @@ HUD.prototype.createElements = function (elements_data) {
 
       // Create sprite and save
       if (element_parameters.type == "icon") {
-        element = new Phaser.Sprite(this.game, position.x, position.y, properties.texture);
-        element.anchor.set(0.5,0.5);
+        element = new Phaser.Image(this.game, position.x, position.y, properties.texture);
+        // element.anchor.set(0.5,0.5);
         // element.setScaleMinMax(0.2,0.2,0.2,0.2);
         // element.scale.setTo(0.2);
       }
       else if (element_parameters.type == "stat") {
         element = new Phaser.Text(this.game, position.x, position.y, "Test", properties.text_style);
+        // Prevent blurry text
+        element.smoothed=false;
 
       }
-      element.anchor.set(0.5,0.5);
+      // element.anchor.set(0.5,0.5);
+      element.anchor.set(0,0.5);
       element.x0 = element_parameters.x0;
       element.y0 = element_parameters.y0;
-      s = element_parameters.scale;
-      element.setScaleMinMax(s,s,s,s);
+      sx = element_parameters.scalex;
+      sy = element_parameters.scaley;
+      element.setScaleMinMax(sx,sy,sx,sy);
 
       this.game.world.add(element);
       this.elements[element_name] = element;
       // region.elements.push(sprite);
 
     }
+
+    // var graphics = Phaser.Graphics(game)
+
+    // graphics.beginFill(0xff0000);
+    // graphics.drawCircle(50, 50, 100);
+    // graphics.endFill();
   }
 
   // update the elements position according to the number of elements in each region

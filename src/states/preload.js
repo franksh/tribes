@@ -38,6 +38,10 @@ Tribes.PreloadState.prototype.preload = function () {
   this.load.image('worker2', 'assets/units/medievalUnit_07.png')//, 32, 48)
   this.load.image('house_simple', 'assets/structures/medievalStructure_17.png', 128,128)//, 32, 48)
 
+  this.load.image('grey_panel', 'assets/ui/grey_panel.png')
+  this.load.image('white_panel', 'assets/ui/white_panel.png')
+
+
   // game.load.onLoadComplete.add(loadComplete, this)
 
 

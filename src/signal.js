@@ -18,13 +18,15 @@ ClickSignal.prototype.myCallback = function() {
 On Mouse click
 */
 ClickSignal.prototype.clicked = function(pointer, eventcontext) {
-  console.log("clicked general");
-  console.log(pointer);
-  console.log(eventcontext);
+  // console.log("clicked general");
+  focused = undefined;
+  // console.log(pointer);
+  // console.log(eventcontext);
 }
 
 ClickSignal.prototype.clickedUnit = function(unit, pointer) {
-  console.log("clicked unit");
-  console.log(unit);
-  console.log(pointer);
+  // console.log("clicked unit");
+  // console.log(unit);
+  focused = unit;
+  // console.log(pointer);
 }
