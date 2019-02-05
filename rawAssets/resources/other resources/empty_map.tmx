@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="hexagonal" renderorder="right-down" width="10" height="10" tilewidth="60" tileheight="39" hexsidelength="30" staggeraxis="x" staggerindex="even" backgroundcolor="#55aa00" nextobjectid="1">
+ <tileset firstgid="1" name="tile_set_flat" tilewidth="60" tileheight="39" tilecount="4" columns="2">
+  <image source="tile_set_flat.png" width="120" height="78"/>
+  <terraintypes>
+   <terrain name="grass" tile="0"/>
+   <terrain name="dirt" tile="1"/>
+   <terrain name="rock" tile="2"/>
+   <terrain name="water" tile="3"/>
+  </terraintypes>
+  <tile id="1" terrain="0,0,0,0"/>
+  <tile id="2" terrain="1,1,1,1"/>
+  <tile id="3" terrain="2,2,2,2"/>
+ </tileset>
+ <layer name="Ground" width="10" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYmBgYELCzDgwsfLYMLI8CxTjU0+MOhY0TK46dHls6nCpoYU6ANT8ASQ=
+  </data>
+ </layer>
+</map>

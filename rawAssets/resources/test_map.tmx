@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="hexagonal" renderorder="right-down" width="10" height="10" tilewidth="60" tileheight="52" hexsidelength="26" staggeraxis="x" staggerindex="even" nextobjectid="1">
+ <tileset firstgid="1" name="tile_set" tilewidth="60" tileheight="52" tilecount="4" columns="2">
+  <image source="tile_set.png" width="120" height="104"/>
+  <terraintypes>
+   <terrain name="Dirt" tile="2"/>
+   <terrain name="water" tile="0"/>
+   <terrain name="Grass" tile="1"/>
+   <terrain name="Mesa" tile="3"/>
+  </terraintypes>
+  <tile id="0" terrain="0,0,0,0"/>
+  <tile id="1" terrain="1,1,1,1"/>
+  <tile id="3" terrain="2,2,2,2"/>
+ </tileset>
+ <layer name="Ground" width="10" height="10">
+  <data encoding="base64">
+   AgAAAAIAAAACAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAIAAAACAAAAAgAAAAQAAAAEAAAABAAAAAQAAAAEAAAAAQAAAAEAAAACAAAAAgAAAAIAAAACAAAAAgAAAAIAAAAEAAAAAQAAAAEAAAABAAAAAgAAAAIAAAACAAAAAgAAAAIAAAABAAAAAQAAAAEAAAABAAAAAQAAAAIAAAACAAAAAgAAAAIAAAACAAAAAQAAAAEAAAABAAAAAQAAAAEAAAACAAAAAgAAAAIAAAACAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAgAAAAIAAAACAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAIAAAACAAAAAgAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAAEAAAABAAAAAQAAAA==
+  </data>
+ </layer>
+</map>
