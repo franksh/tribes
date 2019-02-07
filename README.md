@@ -10,10 +10,6 @@ territory and compete with other tribes.
 Each unit acts on its own - The player can only indirectly control the tribe,
 for example by buying units or unlocking new technology.
 
-# Thanks to
-
--   @nkholski for his awesome [Phaser3 ES6 boilerplate code](https://github.com/nkholski/phaser3-es6-webpack)
-
 # Setup
 
 You’ll need to install a few things before you have a working copy of the project.
@@ -59,3 +55,7 @@ Run:
 `npm run deploy`
 
 This will optimize and minimize the compiled bundle.
+
+# Thanks to
+
+-   @nkholski for his awesome [Phaser3 ES6 boilerplate code](https://github.com/nkholski/phaser3-es6-webpack)

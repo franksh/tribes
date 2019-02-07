@@ -47,8 +47,7 @@ class BootScene extends Phaser.Scene {
             128
         ); //, 32, 48)
 
-        this.load.image("grey_panel", "assets/ui/grey_panel.png");
-        this.load.image("white_panel", "assets/ui/white_panel.png");
+        // slickUI.load("assets");
 
         // Tilemap with a lot of objects and tile-properties tricks
         // this.load.tilemapTiledJSON('map', 'assets/tilemaps/super-mario.json');

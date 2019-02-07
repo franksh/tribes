@@ -14,6 +14,8 @@ export default class GameMap extends Phaser.Tilemaps.Tilemap {
 
         super(scene, mapData);
 
+        // this.scene = scene;
+
         this.initialize();
     }
 
@@ -86,6 +88,9 @@ export default class GameMap extends Phaser.Tilemaps.Tilemap {
 
         this.groundLayer = this.createBlankDynamicLayer("Ground", this.tileset);
         this.groundLayer.putTilesAt(layerData, 0, 0);
+        this.groundLayer = this.convertLayerToStatic(this.groundLayer);
+        // this.groundLayer = this.createStaticLayer("Ground", this.tileset);
+        // this.groundLayer.putTilesAt(layerData, 0, 0);
     }
 
     getNoise(nx, ny) {

@@ -1,7 +1,7 @@
 import "phaser";
 import BootScene from "./scenes/BootScene";
 import GameScene from "./scenes/GameScene";
-import TitleScene from "./scenes/TitleScene";
+import HudScene from "./scenes/HudScene";
 import { config as cfg } from "./config";
 
 const config = {
@@ -11,8 +11,8 @@ const config = {
     // pixelArt: true,
     // roundPixels: true,
     parent: "game-container",
-    width: cfg.TILE_WIDTH * cfg.MAP_WIDTH_TILES,
-    height: cfg.TILE_HEIGHT * cfg.MAP_HEIGHT_TILES,
+    width: cfg.viewport.WIDTH,
+    height: cfg.viewport.HEIGHT,
     // physics: {
     //     default: "arcade",
     //     arcade: {
@@ -25,7 +25,9 @@ const config = {
     scene: [
         BootScene,
         // TitleScene,
-        GameScene
+
+        GameScene,
+        HudScene
     ]
 };
 
