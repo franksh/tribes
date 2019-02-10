@@ -1,7 +1,7 @@
 // import Mario from '../sprites/Mario';
 // import Goomba from '../sprites/Goomba';
-import GameMap from "../helpers/map.js";
-import { CameraManager } from "../helpers/camera";
+import GameMap from "../components/map.js";
+import { CameraManager } from "../components/camera";
 import { config as cfg } from "../config";
 
 class GameScene extends Phaser.Scene {

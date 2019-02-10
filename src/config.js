@@ -1,11 +1,11 @@
 export const config = {
     TILE_WIDTH: 62,
     TILE_HEIGHT: 62,
-    MAP_WIDTH_TILES: 40, // make divisible by 4
+    MAP_WIDTH_TILES: 60, // make divisible by 4
     MAP_HEIGHT_TILES: 40,
     viewport: {
-        WIDTH: 800,
-        HEIGHT: 600
+        WIDTH: 1000,
+        HEIGHT: 700
     }
 };
 
