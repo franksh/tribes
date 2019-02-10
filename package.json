@@ -1,36 +1,36 @@
 {
-  "name": "Phaser3ES6Webpack",
-  "version": "1.1.0",
-  "description": "",
-  "author": "niklas berg <me@niklasberg.se>",
-  "main": "index.js",
-  "scripts": {
-    "dev": "webpack --mode=development",
-    "deploy": "webpack  --mode=production --config webpack.production.config.js",
-    "test": "eslint ./src/**/**.js"
-  },
-  "license": "MIT",
-  "devDependencies": {
-    "@babel/core": "^7.0.0",
-    "@babel/polyfill": "^7.0.0",
-    "@babel/preset-env": "^7.0.0",
-    "babel-eslint": "^9.0.0",
-    "babel-loader": "^8.0.0",
-    "browser-sync": "^2.24.7",
-    "browser-sync-webpack-plugin": "^2.2.2",
-    "clean-webpack-plugin": "^0.1.19",
-    "copy-webpack-plugin": "^4.5.2",
-    "eslint": "^5.5.0",
-    "eslint-plugin-import": "^2.14.0",
-    "expose-loader": "^0.7.5",
-    "html-webpack-plugin": "^3.2.0",
-    "raw-loader": "^0.5.1",
-    "webpack": "^4.18.0",
-    "webpack-cli": "^3.1.0"
-  },
-  "dependencies": {
-    "phaser": "3.12.0",
-    "phaser-animated-tiles": "^2.0.2",
-    "simplex-noise": "^2.4.0"
-  }
+    "name": "Tribes",
+    "version": "0.1.0",
+    "description": "",
+    "author": "frank schlosser <frnkschlssr@gmail.com>",
+    "main": "index.js",
+    "scripts": {
+        "dev": "webpack --mode=development",
+        "deploy": "webpack  --mode=production --config webpack.production.config.js",
+        "test": "eslint ./src/**/**.js"
+    },
+    "license": "MIT",
+    "devDependencies": {
+        "@babel/core": "^7.2.2",
+        "@babel/polyfill": "^7.2.5",
+        "@babel/preset-env": "^7.3.1",
+        "babel-eslint": "^9.0.0",
+        "babel-loader": "^8.0.5",
+        "browser-sync": "^2.26.3",
+        "browser-sync-webpack-plugin": "^2.2.2",
+        "clean-webpack-plugin": "^0.1.19",
+        "copy-webpack-plugin": "^4.6.0",
+        "eslint": "^5.13.0",
+        "eslint-plugin-import": "^2.16.0",
+        "expose-loader": "^0.7.5",
+        "html-webpack-plugin": "^3.2.0",
+        "raw-loader": "^0.5.1",
+        "webpack": "^4.29.3",
+        "webpack-cli": "^3.2.3"
+    },
+    "dependencies": {
+        "phaser": "3.12.0",
+        "phaser-animated-tiles": "^2.0.2",
+        "simplex-noise": "^2.4.0"
+    }
 }
