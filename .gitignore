@@ -1,2 +1,9 @@
-data/
-main.html.bak
+node_modules/
+dist/
+build/
+dev/
+
+rawAssets/
+
+.vscode/
+*.bak*

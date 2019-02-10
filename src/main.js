@@ -1,25 +1,42 @@
-// GAME V3
-// import Tribes from 'src/states/boot.js'
-$.getScript("src/states/boot.js");
-$.getScript("src/states/preload.js");
+import "phaser";
+import BootScene from "./scenes/BootScene";
+import GameScene from "./scenes/GameScene";
+import HudScene from "./scenes/HudScene";
+import { config as cfg } from "./config";
 
-// var http = require("http");
-//
-// // require("./node_modules/phaser-ce/build/phaser.js")
-// require("./node_modules/phaser-ce/build/phaser.js")
-// require("./node_modules/simplex-noise/simplex-noise.js")
-// require("./node_modules/phaser_plugin_pathfinding/bin/phaser_pathfinding-0.2.0.js")
-// require("./node_modules/jquery/dist/jquery.js")
+const config = {
+    // For more settings see <https://github.com/photonstorm/phaser/blob/master/src/boot/Config.js>
+    // type: Phaser.WEBGL,
+    type: Phaser.AUTO,
+    // pixelArt: true,
+    // roundPixels: true,
+    scale: {
+        parent: "game-container",
+        width: cfg.viewport.WIDTH,
+        height: cfg.viewport.HEIGHT
+        // mode: Phaser.Scale.FIT,
+        // autoCenter: Phaser.Scale.CENTER_BOTH
+    },
+    // physics: {
+    //     default: "arcade",
+    //     arcade: {
+    //         gravity: {
+    //             y: 800
+    //         },
+    //         debug: false
+    //     }
+    // },
+    scene: [
+        BootScene,
+        // TitleScene,
 
-var Tribes = Tribes || {};
+        GameScene,
+        HudScene
+    ]
+};
 
-Tribes.Game = function () {
-  Phaser.Game.call(this, WINDOW_WIDTH, WINDOW_HEIGHT, Phaser.AUTO, 'gameArea');
-  this.state.add('Boot', Tribes.BootState, false);
-  this.state.add('Preload', Tribes.PreloadState, false);
+const game = new Phaser.Game(config); // eslint-disable-line no-unused-vars
 
-  this.state.start('Boot');
-}
-
-Tribes.Game.prototype = Object.create(Phaser.Game.prototype);
-Tribes.Game.prototype.constructor = Phaser.Game;
+// game.scale.pageAlignHorizontally = true;
+// game.scale.pageAlignVertically = true;
+// game.scale.refresh();
