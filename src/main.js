@@ -10,9 +10,13 @@ const config = {
     type: Phaser.AUTO,
     // pixelArt: true,
     // roundPixels: true,
-    parent: "game-container",
-    width: cfg.viewport.WIDTH,
-    height: cfg.viewport.HEIGHT,
+    scale: {
+        parent: "game-container",
+        width: cfg.viewport.WIDTH,
+        height: cfg.viewport.HEIGHT
+        // mode: Phaser.Scale.FIT,
+        // autoCenter: Phaser.Scale.CENTER_BOTH
+    },
     // physics: {
     //     default: "arcade",
     //     arcade: {
@@ -32,3 +36,7 @@ const config = {
 };
 
 const game = new Phaser.Game(config); // eslint-disable-line no-unused-vars
+
+// game.scale.pageAlignHorizontally = true;
+// game.scale.pageAlignVertically = true;
+// game.scale.refresh();

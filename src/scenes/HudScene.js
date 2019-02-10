@@ -1,17 +1,25 @@
 import { config as cfg } from "../config";
-import { cameraConfigs } from "../helpers/camera";
 // import { CameraManager } from "../helpers/camera";
+import { TextButton, Panel } from "../common/button";
+
+export const HudConfig = {
+    common: {
+        lowerPanelHeight: 150,
+        minimapSpaceWidth: 200
+    }
+};
 
 class HudScene extends Phaser.Scene {
     constructor() {
         super({ key: "HudScene", visible: true, active: true });
 
+        this.config = HudConfig;
         this.score = 0;
     }
 
     preload() {
         // this.load.image("grey_panel", "assets/ui/grey_panel_big.png");
-        this.load.image("grey_panel", "assets/ui/grey_panel_big_cutout.png");
+        this.load.image("grey_panel", "assets/ui/grey_panel_big.png");
         this.load.image("white_panel", "assets/ui/white_panel.png");
     }
 
@@ -25,12 +33,20 @@ class HudScene extends Phaser.Scene {
         // this.cameraManager = new CameraManager(this);
         // this.cameraManager.addMinimapCamera();
 
-        const lowerPanelHeight = 150;
-
-        const lowerPanel = this.add
-            .image(0, cfg.viewport.HEIGHT - lowerPanelHeight, "grey_panel")
+        this.lowerPanel = this.add
+            .image(
+                0,
+                cfg.viewport.HEIGHT - this.config.common.lowerPanelHeight,
+                "grey_panel"
+            )
             .setOrigin(0, 0) // upper left corner is anchor
-            .setDisplaySize(cfg.viewport.WIDTH, lowerPanelHeight);
+            .setDisplaySize(
+                cfg.viewport.WIDTH,
+                this.config.common.lowerPanelHeight
+            );
+
+        // mask.setAlpha(true);
+
         // let el = new Phaser.Image(this.game, 300, 300, "worker1");
 
         // Add black background to minimap
@@ -48,9 +64,75 @@ class HudScene extends Phaser.Scene {
             },
             this
         );
+
+        this.clickCount = 0;
+        this.clickCountText = this.add.text(100, 200, "");
+
+        // this.clickButton = new TextButton(
+        //     this,
+        //     this.panelXtoViewportX(0),
+        //     this.panelYToViewportY(0),
+        //     "Button",
+        //     {},
+        //     () => this.updateClickCountText()
+        // );
+        // this.add.existing(this.clickButton);
+
+        this.panel = new Panel(
+            this,
+            this.panelXtoViewportX(0),
+            this.panelYToViewportY(0),
+            500,
+            100
+        );
+        this.panel.addButton("Button", () => this.updateClickCountText());
+        this.panel.addButton("Button", () => this.updateClickCountText());
+        this.panel.addButton("Button", () => this.updateClickCountText());
+        this.panel.addButton("Button", () => this.updateClickCountText());
+        this.panel.addButton("Button", () => this.updateClickCountText());
+        this.panel.addButton("Button", () => this.updateClickCountText());
+        this.panel.addButton("Button", () => this.updateClickCountText());
+
+        this.updateClickCountText();
+    }
+
+    updateClickCountText() {
+        console.log("clicked");
+    }
+
+    // Converts coordinates within panel to viewport coordinates
+    panelXtoViewportX(x) {
+        return x + this.config.common.minimapSpaceWidth;
+    }
+    panelYToViewportY(y) {
+        let upperMargin = 15;
+        return (
+            y +
+            cfg.viewport.HEIGHT -
+            this.config.common.lowerPanelHeight +
+            upperMargin
+        );
     }
 
     update() {}
+
+    addMinimapToLowerPanel(posX, posY, minimapWidth, minimapHeight) {
+        this.addMinimapCutout(posX, posY, minimapWidth, minimapHeight);
+        this.addMinimapBlackBorders(posX, posY, minimapWidth, minimapHeight);
+    }
+
+    // Makes a cutout in the lower panel st. Minimap is visible
+    addMinimapCutout(posX, posY, minimapWidth, minimapHeight) {
+        let cutout = new Phaser.GameObjects.Graphics(this);
+        cutout.fillRect(posX, posY, minimapWidth, minimapHeight);
+        // let mask = new Phaser.Display.Masks.GeometryMask(this, cutout);
+        let mask = new Phaser.Display.Masks.BitmapMask(this, cutout);
+        console.log(this);
+        // mask.invertAlpha = true;
+        // lowerPanel.mask = mask;
+        this.lowerPanel.setMask(mask);
+        this.lowerPanel.mask.invertAlpha = true;
+    }
 
     // Adds the black borders in the minimap
     addMinimapBlackBorders(posX, posY, minimapWidth, minimapHeight) {

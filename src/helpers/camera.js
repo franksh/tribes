@@ -41,17 +41,19 @@ export class CameraManager {
 
         var controlConfig = {
             camera: scene.cameras.main,
-            left: scene.cursors.left,
-            right: scene.cursors.right,
-            up: scene.cursors.up,
-            down: scene.cursors.down,
+            left: scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
+            right: scene.input.keyboard.addKey(
+                Phaser.Input.Keyboard.KeyCodes.D
+            ),
+            up: scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W),
+            down: scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
             zoomIn: scene.input.keyboard.addKey(
                 Phaser.Input.Keyboard.KeyCodes.Q
             ),
             zoomOut: scene.input.keyboard.addKey(
                 Phaser.Input.Keyboard.KeyCodes.E
             ),
-            zoomSpeed: 0.01,
+            zoomSpeed: 0.005,
             acceleration: 0.06,
             drag: 0.0005,
             maxSpeed: 1.0
@@ -123,9 +125,9 @@ export class CameraManager {
             posY = camCfg.posY + (minimapSize - minimapHeight) / 2;
         }
 
-        // Call HudScene to add black borders for minimap
+        // Call HudScene to add black borders for minimap and cutout
         var hudScene = scene.scene.get("HudScene");
-        hudScene.addMinimapBlackBorders(
+        hudScene.addMinimapToLowerPanel(
             posX,
             posY,
             minimapWidth,

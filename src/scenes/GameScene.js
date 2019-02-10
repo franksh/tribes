@@ -95,13 +95,18 @@ class GameScene extends Phaser.Scene {
 
     update(time, delta) {
         if (this.cursors.left.isDown) {
-            console.log("left");
+            // console.log("left");
             // this.cameras.main.setScroll();
             // this.cameras.main.scrollX += 1;
             // console.log(this.cameras);
         }
 
+        // Camera movement
         this.controls.update(delta);
+        // Limit camera zoom
+        this.cameras.main.setZoom(Math.min(this.cameras.main.zoom, 0.5));
+        this.cameras.main.setZoom(Math.max(this.cameras.main.zoom, 0.3));
+
         // this.controlsMini.update(delta);
     }
 
