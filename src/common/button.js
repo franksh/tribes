@@ -1,10 +1,15 @@
 export class TextButton extends Phaser.GameObjects.Text {
-    constructor(scene, x, y, text, style, callback) {
-        super(scene, x, y, text, style);
+    constructor(scene, x, y, text, callback) {
+        // const { key, entityKey, text, callback } = buttonCfg;
+
+        super(scene, x, y, text, {});
+
+        // this.entityKey = entityKey;
 
         this.setBackgroundColor("#555");
         this.setFill("#fff");
         this.setPadding(4, 2, 4, 2);
+        this.isActive = false;
         // this.setStroke("#fff", 2);
 
         this.setInteractive({ useHandCursor: true })
@@ -13,16 +18,30 @@ export class TextButton extends Phaser.GameObjects.Text {
             .on("pointerdown", () => this.enterButtonActiveState())
             .on("pointerup", () => {
                 this.enterButtonHoverState();
+                this.toggleActive();
                 callback();
             });
     }
 
+    toggleActive() {
+        this.isActive = !this.isActive;
+    }
+
+    setActive(status) {
+        this.isActive = status;
+        this.enterButtonRestState();
+    }
+
     enterButtonHoverState() {
-        this.setBackgroundColor("#999");
+        this.setBackgroundColor("#990");
     }
 
     enterButtonRestState() {
-        this.setBackgroundColor("#555");
+        if (!this.isActive) {
+            this.setBackgroundColor("#555");
+        } else if (this.isActive) {
+            this.setBackgroundColor("#099");
+        }
     }
 
     enterButtonActiveState() {
@@ -45,14 +64,38 @@ export class Panel {
         this.elPerCol = parseInt(height / this.elHeight);
     }
 
-    addButton(text, callback) {
+    // Returns the position of the next button in panel
+    getNextButtonPosition() {
         let numberElements = this.elements.length;
         let x =
             this.x + parseInt(numberElements / this.elPerCol) * this.elWidth;
         let y = this.y + (numberElements % this.elPerCol) * this.elHeight;
+        return { x, y };
+    }
 
-        let button = new TextButton(this.scene, x, y, text, {}, callback);
+    addButton(text, callback) {
+        // Create BUtton
+        let pos = this.getNextButtonPosition();
+        let button = new TextButton(this.scene, pos.x, pos.y, text, callback);
         this.elements.push(button);
         this.scene.add.existing(button);
+    }
+
+    addBuildButton(text, entityKey) {
+        // Set toggle Build callback
+        let gameScene = this.scene.scene.get("GameScene");
+        const callback = () =>
+            gameScene.pointerManager.toggleBuildMode(entityKey);
+        // Create Button
+        let pos = this.getNextButtonPosition();
+        let button = new TextButton(this.scene, pos.x, pos.y, text, callback);
+        this.elements.push(button);
+        this.scene.add.existing(button);
+    }
+
+    deactivateAllButtons() {
+        for (let i = 0; i < this.elements.length; i++) {
+            this.elements[i].setActive(false);
+        }
     }
 }

@@ -54,9 +54,10 @@ class HudScene extends Phaser.Scene {
         // let camCfg = cameraConfigs.minimap;
         // const blackBack1 =
 
-        let gameScene = this.scene.get("GameScene");
+        // let gameScene = this.scene.get("GameScene");
+        this.gameScene = this.scene.get("GameScene");
 
-        gameScene.events.on(
+        this.gameScene.events.on(
             "addScore",
             function() {
                 this.score += 10;
@@ -78,20 +79,22 @@ class HudScene extends Phaser.Scene {
         // );
         // this.add.existing(this.clickButton);
 
-        this.panel = new Panel(
+        // This panel is always displayed, showing options
+        // that are always available
+        this.buildPanel = new Panel(
             this,
-            this.panelXtoViewportX(0),
-            this.panelYToViewportY(0),
+            this.staticPanelXtoViewportX(0),
+            this.staticPanelYToViewportY(0),
             500,
             100
         );
-        this.panel.addButton("Button", () => this.updateClickCountText());
-        this.panel.addButton("Button", () => this.updateClickCountText());
-        this.panel.addButton("Button", () => this.updateClickCountText());
-        this.panel.addButton("Button", () => this.updateClickCountText());
-        this.panel.addButton("Button", () => this.updateClickCountText());
-        this.panel.addButton("Button", () => this.updateClickCountText());
-        this.panel.addButton("Button", () => this.updateClickCountText());
+        this.buildPanel.addBuildButton("Build HQ", "hq");
+        // this.staticPanel.addButton("Button", () => this.updateClickCountText());
+        // this.staticPanel.addButton("Button", () => this.updateClickCountText());
+        // this.staticPanel.addButton("Button", () => this.updateClickCountText());
+        // this.staticPanel.addButton("Button", () => this.updateClickCountText());
+        // this.staticPanel.addButton("Button", () => this.updateClickCountText());
+        // this.staticPanel.addButton("Button", () => this.updateClickCountText());
 
         this.updateClickCountText();
     }
@@ -100,11 +103,11 @@ class HudScene extends Phaser.Scene {
         console.log("clicked");
     }
 
-    // Converts coordinates within panel to viewport coordinates
-    panelXtoViewportX(x) {
+    // Converts coordinates within staticPanel to viewport coordinates
+    staticPanelXtoViewportX(x) {
         return x + this.config.common.minimapSpaceWidth;
     }
-    panelYToViewportY(y) {
+    staticPanelYToViewportY(y) {
         let upperMargin = 15;
         return (
             y +
@@ -127,7 +130,6 @@ class HudScene extends Phaser.Scene {
         cutout.fillRect(posX, posY, minimapWidth, minimapHeight);
         // let mask = new Phaser.Display.Masks.GeometryMask(this, cutout);
         let mask = new Phaser.Display.Masks.BitmapMask(this, cutout);
-        console.log(this);
         // mask.invertAlpha = true;
         // lowerPanel.mask = mask;
         this.lowerPanel.setMask(mask);

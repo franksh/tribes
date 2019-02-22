@@ -3,6 +3,10 @@
 import GameMap from "../components/map.js";
 import { CameraManager } from "../components/camera";
 import { config as cfg } from "../config";
+import { HQ } from "../sprites/buildings/HQ";
+// import MyPointer from "../components/pointer";
+import { PointerManager } from "../components/pointer";
+import _ from "lodash";
 
 class GameScene extends Phaser.Scene {
     constructor() {
@@ -12,102 +16,53 @@ class GameScene extends Phaser.Scene {
     preload() {}
 
     create() {
-        // This scene is either called to run in attract mode in the background of the title screen
-        // or for actual gameplay. Attract mode is based on a JSON-recording.
-        // if (this.registry.get("attractMode")) {
-        //     this.attractMode = {
-        //         recording: this.sys.cache.json.entries.entries.attractMode,
-        //         current: 0,
-        //         time: 0
-        //     };
-        // } else {
-        //     this.attractMode = null;
-        // }
-        console.log("Game scene");
-
-        // Add and play the music
-        // this.music = this.sound.add("overworld");
-        // this.music.play({
-        //     loop: true
-        // });
-
-        // LOAD MAP
-        // const map = new GameMap(this, mapConfig);
+        // SET UP MANAGERS
+        // Map
         this.map = new GameMap(this);
         this.map.createMap();
-
-        // CAMERA
-        //  The world is 3200 x 600 in size
-        // this.cameras.add
-        // this.cameras.main.setBounds(0, 0, 3200, 600).setName("main");
-
-        // console.log(this.cameras);
-        // this.cameras = new CameraManager(this);
-
-        // let config = this.game.config;
-        // let camera = new Phaser.Cameras.Scene2D.Camera(config);
-        // console.log(this.cameras);
-        // this.cameras.addExisting(camera, true);
-        // this.cameras.add(0, 0, 1000, 1000, true, "main");
-        // console.log(this.cameras.main);
-        // console.log(this.cameras);
-
-        // this.cameras.remove(this.cameras.main);
-        // let camera = new MainCamera(
-        //     0,
-        //     0,
-        //     this.game.config.width,
-        //     this.game.config.height
-        // );
-        // this.cameras.addExisting(camera, true);
-
-        // // this.cameras.main = camera;
-        // this.cameras.addExisting(camera, true);
-        // console.log(camera);
-
+        // Camera
         this.cameraManager = new CameraManager(this);
         this.cameraManager.addAllCameras();
+        // Pointer
+        this.pointerManager = new PointerManager(this);
 
-        // this.minimap.scrollX = 1600;
-        // this.minimap.scrollY = 300;
+        // Game loop
+        this.logicTimer = this.time.addEvent({
+            delay: 1000,
+            callback: this.updateLogic,
+            callbackScope: this,
+            timeScale: cfg.timeScale,
+            loop: true
+        });
 
-        // var minimapControlConfig = {
-        //     camera: this.cameras.getCamera("mini"),
-        //     left: this.cursors.left,
-        //     right: this.cursors.right,
-        //     up: this.cursors.up,
-        //     down: this.cursors.down,
-        //     zoomIn: this.input.keyboard.addKey(
-        //         Phaser.Input.Keyboard.KeyCodes.Q
-        //     ),
-        //     zoomOut: this.input.keyboard.addKey(
-        //         Phaser.Input.Keyboard.KeyCodes.E
-        //     ),
-        //     acceleration: 0.06,
-        //     drag: 0.0005,
-        //     maxSpeed: 1.0
-        // };
+        // CREATE OBJECTS
+        let hq = new HQ({
+            gameScene: this,
+            x: 100,
+            y: 100
+        });
 
-        // this.controlsMini = new Phaser.Cameras.Controls.SmoothedKeyControl(
-        //     minimapControlConfig
-        // );
+        console.log(this.getGameObjectConfig("hq"));
     }
 
     update(time, delta) {
-        if (this.cursors.left.isDown) {
-            // console.log("left");
-            // this.cameras.main.setScroll();
-            // this.cameras.main.scrollX += 1;
-            // console.log(this.cameras);
-        }
+        // Update Managers
+        this.pointerManager.update();
+        this.cameraManager.update();
 
         // Camera movement
         this.controls.update(delta);
-        // Limit camera zoom
-        this.cameras.main.setZoom(Math.min(this.cameras.main.zoom, 0.5));
-        this.cameras.main.setZoom(Math.max(this.cameras.main.zoom, 0.3));
 
         // this.controlsMini.update(delta);
+    }
+
+    updateLogic() {
+        // console.log(
+        //     this.logicTimer
+        //         .getProgress()
+        //         .toString()
+        //         .substr(0, 4)
+        // );
     }
 
     tileCollision(sprite, tile) {}
@@ -123,6 +78,23 @@ class GameScene extends Phaser.Scene {
         }
       )
     } */
+
+    createBuilding(key, x, y) {
+        if (key === "hq") {
+            let hq = new HQ({
+                gameScene: this,
+                x: x,
+                y: y
+            });
+        }
+    }
+
+    getGameObjectConfig(key) {
+        let objConfig = _.filter(cfg.gameObjects, function(item) {
+            return item.key === key;
+        });
+        if (objConfig) return objConfig[0];
+    }
 
     updateScore(score) {}
 

@@ -6,6 +6,16 @@ export const config = {
     viewport: {
         WIDTH: 1000,
         HEIGHT: 700
+    },
+    timeScale: 1,
+    gameObjects: {
+        HQ: {
+            key: "hq",
+            spriteKey: "house_simple",
+            scaleX: 0.7,
+            scaleY: 0.7,
+            cost: 100
+        }
     }
 };
 
