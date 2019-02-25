@@ -51,6 +51,8 @@ export class Panel {
         let gameScene = this.scene.scene.get("GameScene");
         const callback = () =>
             gameScene.pointerManager.toggleBuildMode(entityKey);
+        // button.emit("toggleBuildMode", entityKey);
+
         // Create Button
         let pos = this.getNextElementPosition();
         let button = new ImageButton(
@@ -61,7 +63,6 @@ export class Panel {
             callback
         );
 
-        button.emit("toggleBuildMode", entityKey);
         this.elements.push(button);
         this.scene.add.existing(button);
     }
