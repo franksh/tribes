@@ -1,6 +1,6 @@
 import { config as cfg } from "../config";
 // import { CameraManager } from "../helpers/camera";
-import { TextButton, Panel } from "../common/button";
+import { Panel } from "../common/panels";
 
 export const HudConfig = {
     common: {
@@ -25,36 +25,7 @@ class HudScene extends Phaser.Scene {
 
     create() {
         console.log("Creating HudScene");
-        // let info = this.add.text(500, 500, "Score: 0", {
-        //     font: "48px Arial",
-        //     fill: "#000000"
-        // });
 
-        // this.cameraManager = new CameraManager(this);
-        // this.cameraManager.addMinimapCamera();
-
-        this.lowerPanel = this.add
-            .image(
-                0,
-                cfg.viewport.HEIGHT - this.config.common.lowerPanelHeight,
-                "grey_panel"
-            )
-            .setOrigin(0, 0) // upper left corner is anchor
-            .setDisplaySize(
-                cfg.viewport.WIDTH,
-                this.config.common.lowerPanelHeight
-            );
-
-        // mask.setAlpha(true);
-
-        // let el = new Phaser.Image(this.game, 300, 300, "worker1");
-
-        // Add black background to minimap
-        // Add two rectangles, either left/right or on top/bottom of map
-        // let camCfg = cameraConfigs.minimap;
-        // const blackBack1 =
-
-        // let gameScene = this.scene.get("GameScene");
         this.gameScene = this.scene.get("GameScene");
 
         this.gameScene.events.on(
@@ -69,15 +40,17 @@ class HudScene extends Phaser.Scene {
         this.clickCount = 0;
         this.clickCountText = this.add.text(100, 200, "");
 
-        // this.clickButton = new TextButton(
-        //     this,
-        //     this.panelXtoViewportX(0),
-        //     this.panelYToViewportY(0),
-        //     "Button",
-        //     {},
-        //     () => this.updateClickCountText()
-        // );
-        // this.add.existing(this.clickButton);
+        this.lowerPanelBackground = this.add
+            .image(
+                0,
+                cfg.viewport.HEIGHT - this.config.common.lowerPanelHeight,
+                "grey_panel"
+            )
+            .setOrigin(0, 0) // upper left corner is anchor
+            .setDisplaySize(
+                cfg.viewport.WIDTH,
+                this.config.common.lowerPanelHeight
+            );
 
         // This panel is always displayed, showing options
         // that are always available
@@ -96,6 +69,14 @@ class HudScene extends Phaser.Scene {
         // this.staticPanel.addButton("Button", () => this.updateClickCountText());
         // this.staticPanel.addButton("Button", () => this.updateClickCountText());
 
+        this.upperPanelBackground = this.add
+            .image(0, 0, "grey_panel")
+            .setOrigin(0, 0) // upper left corner is anchor
+            .setDisplaySize(cfg.viewport.WIDTH, 50);
+
+        this.scorePanel = new Panel(this, 10, 10, 500, 30);
+        this.scorePanel.addScoreField("food");
+
         this.updateClickCountText();
     }
 
@@ -108,7 +89,7 @@ class HudScene extends Phaser.Scene {
         return x + this.config.common.minimapSpaceWidth;
     }
     staticPanelYToViewportY(y) {
-        let upperMargin = 15;
+        let upperMargin = 35;
         return (
             y +
             cfg.viewport.HEIGHT -
@@ -132,8 +113,8 @@ class HudScene extends Phaser.Scene {
         let mask = new Phaser.Display.Masks.BitmapMask(this, cutout);
         // mask.invertAlpha = true;
         // lowerPanel.mask = mask;
-        this.lowerPanel.setMask(mask);
-        this.lowerPanel.mask.invertAlpha = true;
+        this.lowerPanelBackground.setMask(mask);
+        this.lowerPanelBackground.mask.invertAlpha = true;
     }
 
     // Adds the black borders in the minimap

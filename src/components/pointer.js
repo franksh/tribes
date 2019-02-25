@@ -10,6 +10,12 @@ export class PointerManager {
 
         // Register events
         this.gameScene.input.on("pointerdown", this.onClick.bind(this));
+
+        // this.gameScene.sys.events.on(
+        //     "toggleBuildMode",
+        //     this.toggleBuildMode,
+        //     this
+        // );
     }
 
     update() {
@@ -24,6 +30,14 @@ export class PointerManager {
             let worldCoords = this.getPointerTileCoords();
             // let worldCoords = this.getPointerWorldCoords();
             this.loadedEntity.setPosition(worldCoords.x, worldCoords.y);
+
+            if (this.isEntityPlaceableAtPointerLoc()) {
+                this.loadedEntity.clearTint();
+                this.loadedEntity.setAlpha(0.8);
+            } else {
+                this.loadedEntity.setTint(0xff0000);
+                this.loadedEntity.setAlpha(0.5);
+            }
         }
         // let pointer = this.input.activePointer;
         // if (pointer.isDown) {
@@ -94,6 +108,10 @@ export class PointerManager {
     //     console.log(this.loadedEntity);
     // }
 
+    getPointerCoords() {
+        return { x: this.pointer.x, y: this.pointer.y };
+    }
+
     getPointerWorldCoords() {
         let xView = this.pointer.x;
         let yView = this.pointer.y;
@@ -108,7 +126,7 @@ export class PointerManager {
         let tileW = cfg.TILE_WIDTH;
         let tileH = cfg.TILE_HEIGHT;
         let xTile = worldCoords.x - (worldCoords.x % tileW) + tileW / 2;
-        let yTile = worldCoords.y - (worldCoords.y % tileH) + tileH / 2 - 12;
+        let yTile = worldCoords.y - (worldCoords.y % tileH) + tileH / 2;
         // let xView = this.pointer.x;
         // let yView = this.pointer.y;
         // let xTile = xView - (xView % 64);
@@ -124,8 +142,16 @@ export class PointerManager {
 
     onClick(pointer) {
         console.log("clicked");
-
-        console.log(this);
+        // let isPlaceable = this.isEntityPlaceableAtPointerLoc();
+        let pointerCoords = this.getPointerWorldCoords();
+        console.log(pointerCoords);
+        console.log(this.getPointerTileCoords());
+        let map = this.gameScene.map;
+        let tile = map.getTileAtWorldXY(pointerCoords.x, pointerCoords.y);
+        console.log(tile);
+        if (tile) {
+            console.log(map.isTileAccessible(tile));
+        }
 
         if (this.isLoaded()) {
             // Build entity
@@ -153,6 +179,16 @@ export class PointerManager {
         // console.log(
         //     this.gameScene.map.groundLayer.getTileAtWorldXY(touchX, touchY)
         // );
+    }
+
+    isEntityPlaceableAtPointerLoc() {
+        let pointerCoords = this.getPointerWorldCoords();
+        let map = this.gameScene.map;
+        let tile = map.getTileAtWorldXY(pointerCoords.x, pointerCoords.y);
+        if (tile) {
+            return map.isTileAccessible(tile);
+        }
+        return false;
     }
 }
 

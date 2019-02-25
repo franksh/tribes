@@ -4,6 +4,7 @@ import GameMap from "../components/map.js";
 import { CameraManager } from "../components/camera";
 import { config as cfg } from "../config";
 import { HQ } from "../sprites/buildings/HQ";
+import Tribe from "../sprites/Tribe";
 // import MyPointer from "../components/pointer";
 import { PointerManager } from "../components/pointer";
 import _ from "lodash";
@@ -35,14 +36,17 @@ class GameScene extends Phaser.Scene {
             loop: true
         });
 
+        let tribe1 = new Tribe(1, true);
+
         // CREATE OBJECTS
         let hq = new HQ({
             gameScene: this,
             x: 100,
-            y: 100
+            y: 100,
+            tribe: tribe1
         });
 
-        console.log(this.getGameObjectConfig("hq"));
+        console.log(this.children);
     }
 
     update(time, delta) {
@@ -57,6 +61,18 @@ class GameScene extends Phaser.Scene {
     }
 
     updateLogic() {
+        let children = this.children.list;
+        // console.log(children);
+        for (let i in children) {
+            if ("updateLogic" in children[i]) {
+                children[i].updateLogic();
+            }
+        }
+        // for (let i = 0; i < children.length; i++) {
+        //     if ("updateLogic" in children[i]) {
+        //         children[i].updateLogic();
+        //     }
+        // }
         // console.log(
         //     this.logicTimer
         //         .getProgress()
@@ -94,6 +110,11 @@ class GameScene extends Phaser.Scene {
             return item.key === key;
         });
         if (objConfig) return objConfig[0];
+    }
+
+    getGameObjectProperty(key, property) {
+        let objConfig = this.getGameObjectConfig(key);
+        return objConfig[property];
     }
 
     updateScore(score) {}

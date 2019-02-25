@@ -38,7 +38,7 @@ export default class GameMap extends Phaser.Tilemaps.Tilemap {
             stone_item_heavy: 79,
             berry_a: 100
         };
-        this.walkables = [0, 100];
+        this.walkables = [0, 1, 2, 3, 100];
 
         this.noise_gen = new SimplexNoise();
         // console.log(SimplexNoise);
@@ -191,5 +191,10 @@ export default class GameMap extends Phaser.Tilemaps.Tilemap {
             // }
         }
         return data;
+    }
+
+    isTileAccessible(tile) {
+        let tile_id = tile.index;
+        return this.walkables.includes(tile_id);
     }
 }
