@@ -14,7 +14,7 @@ export default class GameMap extends Phaser.Tilemaps.Tilemap {
 
         super(scene, mapData);
 
-        // this.scene = scene;
+        this.mapConfig = mapConfig;
 
         this.initialize();
     }
@@ -41,10 +41,21 @@ export default class GameMap extends Phaser.Tilemaps.Tilemap {
         this.walkables = [0, 1, 2, 3, 100];
 
         this.noise_gen = new SimplexNoise();
-        // console.log(SimplexNoise);
 
-        this.tileset = this.addTilesetImage("tiles", null, 64, 64, 32, 32);
-        // this.map = null;
+        // The following padding is to account for "tile extrusion", see
+        // https://github.com/sporadic-labs/tile-extruder
+        // Needs to be done because the used tilesheet was extruded.
+        let TILE_MARGIN_EXTRUDED = config.TILE_MARGIN + 1;
+        let TILE_SPACING_EXTRUDED = config.TILE_SPACING + 2;
+
+        this.tileset = this.addTilesetImage(
+            "tiles",
+            null,
+            config.TILE_WIDTH,
+            config.TILE_HEIGHT,
+            TILE_MARGIN_EXTRUDED,
+            TILE_SPACING_EXTRUDED
+        );
         this.layer = null;
     }
 
@@ -196,5 +207,17 @@ export default class GameMap extends Phaser.Tilemaps.Tilemap {
     isTileAccessible(tile) {
         let tile_id = tile.index;
         return this.walkables.includes(tile_id);
+    }
+
+    // At the moment these are the same
+    isTileBuildable(tile) {
+        return this.isTileAccessible(tile);
+    }
+
+    // Returns the center of the tile
+    getTileCenter(tile) {
+        let x = tile.pixelX + this.mapConfig.tileWidth / 2;
+        let y = tile.pixelY + this.mapConfig.tileHeight / 2;
+        return { x, y };
     }
 }

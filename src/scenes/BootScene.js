@@ -28,7 +28,10 @@ class BootScene extends Phaser.Scene {
 
         // Load assets
 
-        this.load.image("tiles", "assets/tiles/medieval_tilesheet copy.png");
+        this.load.image(
+            "tiles",
+            "assets/tiles/medieval_tilesheet_corrected_extruded.png"
+        );
 
         this.load.image("worker1", "assets/units/medievalUnit_01.png"); //, 32, 48)
         this.load.image("fighter1", "assets/units/medievalUnit_03.png", 64, 64); //, 32, 48)

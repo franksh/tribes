@@ -10,27 +10,16 @@ export class PointerManager {
 
         // Register events
         this.gameScene.input.on("pointerdown", this.onClick.bind(this));
-
-        // this.gameScene.sys.events.on(
-        //     "toggleBuildMode",
-        //     this.toggleBuildMode,
-        //     this
-        // );
     }
 
+    // UPDATE & EVENTS
+
     update() {
-        if (this.gameScene.cursors.left.isDown) {
-            console.log("left");
-            // this.cameras.main.setScroll();
-            // this.cameras.main.scrollX += 1;
-            // console.log(this.cameras);
-        }
-
         if (this.isLoaded()) {
-            let worldCoords = this.getPointerTileCoords();
-            // let worldCoords = this.getPointerWorldCoords();
-            this.loadedEntity.setPosition(worldCoords.x, worldCoords.y);
-
+            // Adjust position of loaded Image
+            let { x, y } = this.getPointerGridCoords();
+            this.loadedEntity.setPosition(x, y);
+            // Show whether entity is placeable
             if (this.isEntityPlaceableAtPointerLoc()) {
                 this.loadedEntity.clearTint();
                 this.loadedEntity.setAlpha(0.8);
@@ -39,14 +28,17 @@ export class PointerManager {
                 this.loadedEntity.setAlpha(0.5);
             }
         }
-        // let pointer = this.input.activePointer;
-        // if (pointer.isDown) {
-        //     const x = pointer.x;
-        //     const y = pointer.y;
-        //     console.log(x, y);
-        //     console.log(this.map.groundLayer.getTileAtWorldXY(x, y));
-        // }
     }
+
+    onClick(pointer) {
+        // Try to place an entity if cursor is loaded
+        if (this.isLoaded()) {
+            let success = this.tryToPlaceLoadedEntity();
+            if (success) this.unloadEntityUnlessShiftPressed();
+        }
+    }
+
+    // LOAD AND UNLOAD ENTITY
 
     isLoaded() {
         return this.loadedEntity !== undefined;
@@ -60,6 +52,11 @@ export class PointerManager {
         }
     }
 
+    /* 
+    Loads the entity with the corresponding key
+    onto the pointer. It creates an image that follows the pointer,
+    and the entity can be placed into the world on click.
+    */
     loadEntity(entityKey) {
         // Get sprite from config
         let objConfig = this.gameScene.getGameObjectConfig(entityKey);
@@ -76,6 +73,7 @@ export class PointerManager {
         this.loadedEntity.key = entityKey;
     }
 
+    // Unload the currently stored entity
     unloadEntity() {
         if (this.isLoaded()) {
             this.loadedEntity.destroy();
@@ -83,30 +81,47 @@ export class PointerManager {
         }
     }
 
-    // loadUnloadEntity(entityConfig) {
-    //     const { key: key, entityKey } = entityConfig;
-    //     // console.log(button);
-    //     if (!this.isLoaded()) {
-    //         let spriteKey = "";
-    //         if (entityKey === "hq") {
-    //             spriteKey = "house_simple";
-    //         }
-    //         // Create object
-    //         let worldCoords = this.getPointerWorldCoords();
-    //         this.loadedEntity = this.gameScene.add.image(
-    //             worldCoords.x,
-    //             worldCoords.y,
-    //             spriteKey
-    //         );
-    //         this.loadedEntity.entityKey = entityKey;
-    //         this.loadedEntity.key = key;
-    //         console.log("entity loaded");
-    //     } else if (this.isLoaded()) {
-    //         this.loadedEntity.destroy();
-    //         this.loadedEntity = undefined;
-    //     }
-    //     console.log(this.loadedEntity);
-    // }
+    // Unload the entity, unless shift pressed
+    unloadEntityUnlessShiftPressed() {
+        var keyObj = this.gameScene.input.keyboard.addKey(
+            Phaser.Input.Keyboard.KeyCodes.SHIFT
+        );
+        var shiftIsDown = keyObj.isDown;
+        if (!shiftIsDown) {
+            this.unloadEntity(this.loadedEntity);
+            this.hudScene.buildPanel.deactivateAllButtons();
+        }
+    }
+
+    // ENTITY PLACEMENT
+
+    tryToPlaceLoadedEntity() {
+        // Check if a tile is under cursor
+        let tile = this.getTileUnderPointer();
+        if (tile === undefined) return false;
+
+        // Check if tile is builadble
+        let map = this.gameScene.map;
+        if (!map.isTileBuildable(tile)) return false;
+
+        // Build entity at location
+        let { x, y } = map.getTileCenter(tile);
+        let entityKey = this.loadedEntity.key;
+        this.gameScene.createBuilding(entityKey, x, y);
+        return true;
+    }
+
+    isEntityPlaceableAtPointerLoc() {
+        let pointerCoords = this.getPointerWorldCoords();
+        let map = this.gameScene.map;
+        let tile = map.getTileAtWorldXY(pointerCoords.x, pointerCoords.y);
+        if (tile) {
+            return map.isTileAccessible(tile);
+        }
+        return false;
+    }
+
+    // UTILITY FUNCTIONS
 
     getPointerCoords() {
         return { x: this.pointer.x, y: this.pointer.y };
@@ -120,98 +135,25 @@ export class PointerManager {
         return worldCoords;
     }
 
-    // Returns the coords of the tile under Cursor
-    getPointerTileCoords() {
-        let worldCoords = this.getPointerWorldCoords();
+    /*  
+    Returns the pixel coordinates of the grid tile under the pointer
+    This is different from tile coordinates because it also extends
+    outside of the map. Only use for display purposes, not to place!
+    */
+    getPointerGridCoords() {
+        // Get world coordinates and modulo to nearest grid tile
+        let { x: xWorld, y: yWorld } = this.getPointerWorldCoords();
         let tileW = cfg.TILE_WIDTH;
         let tileH = cfg.TILE_HEIGHT;
-        let xTile = worldCoords.x - (worldCoords.x % tileW) + tileW / 2;
-        let yTile = worldCoords.y - (worldCoords.y % tileH) + tileH / 2;
-        // let xView = this.pointer.x;
-        // let yView = this.pointer.y;
-        // let xTile = xView - (xView % 64);
-        // let yTile = yView - (yView % 64);
-        // // let tile = this.gameScene.map.groundLayer.getTileAtWorldXY(
-        //     xView,
-        //     yView
-        // );
-        // let xTile = tile.getCenterX(this.gameScene.cameras.main);
-        // let yTile = tile.getCenterY(this.gameScene.cameras.main);
-        return { x: xTile, y: yTile };
+        let x = xWorld - (xWorld % tileW) + tileW / 2;
+        let y = yWorld - (yWorld % tileH) + tileH / 2;
+        return { x, y };
     }
 
-    onClick(pointer) {
-        console.log("clicked");
-        // let isPlaceable = this.isEntityPlaceableAtPointerLoc();
-        let pointerCoords = this.getPointerWorldCoords();
-        console.log(pointerCoords);
-        console.log(this.getPointerTileCoords());
-        let map = this.gameScene.map;
-        let tile = map.getTileAtWorldXY(pointerCoords.x, pointerCoords.y);
-        console.log(tile);
-        if (tile) {
-            console.log(map.isTileAccessible(tile));
-        }
-
-        if (this.isLoaded()) {
-            // Build entity
-            let coords = this.getPointerTileCoords();
-            console.log(this.loadedEntity);
-            let entityKey = this.loadedEntity.key;
-            this.gameScene.createBuilding(entityKey, coords.x, coords.y);
-
-            // Unload unless shift pressed
-            var keyObj = this.gameScene.input.keyboard.addKey(
-                Phaser.Input.Keyboard.KeyCodes.SHIFT
-            );
-            var shiftIsDown = keyObj.isDown;
-            if (!shiftIsDown) {
-                this.unloadEntity(this.loadedEntity);
-                this.hudScene.buildPanel.deactivateAllButtons();
-            }
-        }
-
-        // var touchX = pointer.x;
-        // var touchY = pointer.y;
-        // console.log(touchX, touchY);
-        // console.log(this.getPointerTileCoords());
-        // // console.log(this);
-        // console.log(
-        //     this.gameScene.map.groundLayer.getTileAtWorldXY(touchX, touchY)
-        // );
-    }
-
-    isEntityPlaceableAtPointerLoc() {
+    getTileUnderPointer() {
         let pointerCoords = this.getPointerWorldCoords();
         let map = this.gameScene.map;
         let tile = map.getTileAtWorldXY(pointerCoords.x, pointerCoords.y);
-        if (tile) {
-            return map.isTileAccessible(tile);
-        }
-        return false;
+        return tile;
     }
 }
-
-// export default class MyPointer extends Phaser.Input.Pointer {
-//     constructor() {
-//         // var newPointer = Object.create(pointer);
-//         // return newPointer;
-//         // super();
-//         // this = {...this}
-//         // super();
-//         super();
-//         // Object.assign(pointer, this);
-//         // return this;
-//     }
-
-//     hello() {
-//         console.log("Hello");
-//     }
-// }
-// // export default class MyPointer extends Phaser.Input.Pointer {
-// //     constructor(pointer) {
-// //         super();
-// //         var newPointer = Object.create(pointer);
-// //         return newPointer;
-// //     }
-// // }

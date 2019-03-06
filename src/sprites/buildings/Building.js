@@ -13,7 +13,6 @@ export default class Building extends Phaser.GameObjects.Sprite {
         // Set config properties
         this.setScale(scaleX, scaleY);
         this.tribe = tribe;
-        console.log(tribe);
         // Add to scene
         scene.add.existing(this);
 
