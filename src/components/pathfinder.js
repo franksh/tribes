@@ -27,7 +27,7 @@ export default class Pathfinder {
         }
         this.easystar.setGrid(grid);
 
-        // Get Accessible Tiles Tiles
+        // Get Accessible Tiles
         let accessibles = this.scene.map.accessibles;
         this.easystar.setAcceptableTiles(accessibles);
 
