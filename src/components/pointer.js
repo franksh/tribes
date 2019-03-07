@@ -100,15 +100,18 @@ export class PointerManager {
         let tile = this.getTileUnderPointer();
         if (tile === undefined) return false;
 
-        // Check if tile is builadble
-        let map = this.gameScene.map;
-        if (!map.isTileBuildable(tile)) return false;
-
-        // Build entity at location
-        let { x, y } = map.getTileCenter(tile);
+        // Try the build
         let entityKey = this.loadedEntity.key;
-        this.gameScene.createBuilding(entityKey, x, y);
-        return true;
+        let tribe = 1;
+        return this.gameScene.tryCreateBuilding(entityKey, tile, tribe);
+        // // Check if tile is builadble
+        // let map = this.gameScene.map;
+        // if (!map.isTileBuildable(tile)) return false;
+
+        // // Build entity at location
+        // let { x, y } = map.getTileCenter(tile);
+        // this.gameScene.createBuilding(entityKey, x, y);
+        // return true;
     }
 
     isEntityPlaceableAtPointerLoc() {

@@ -63,8 +63,6 @@ export class ImageButton extends Phaser.GameObjects.Image {
         this.graphics.strokeRectShape(this.bounds);
         this.graphics.fillStyle(0xaaaaaa, 1.0);
         this.graphics.fillRectShape(this.bounds);
-        console.log(this.bounds);
-        console.log(this.graphics);
         // this.setBackgroundColor("#555");
         // this.setFill("#fff");
         // this.setPadding(4, 2, 4, 2);

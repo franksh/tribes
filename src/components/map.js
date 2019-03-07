@@ -38,7 +38,7 @@ export default class GameMap extends Phaser.Tilemaps.Tilemap {
             stone_item_heavy: 79,
             berry_a: 100
         };
-        this.walkables = [0, 1, 2, 3, 100];
+        this.accessibles = [0, 1, 2, 3, 100];
 
         this.noise_gen = new SimplexNoise();
 
@@ -61,7 +61,9 @@ export default class GameMap extends Phaser.Tilemaps.Tilemap {
 
     createMap() {
         // this.createSimpleMap();
-        this.generateRandomMap();
+        // this.createEmptyMap();
+        this.createObstacleMap();
+        // this.generateRandomMap();
     }
 
     // For testing purposes
@@ -81,6 +83,37 @@ export default class GameMap extends Phaser.Tilemaps.Tilemap {
         ];
         this.groundLayer = this.createBlankDynamicLayer("Ground", this.tileset);
         this.groundLayer.putTilesAt(layerData, 0, 0);
+        this.groundLayer = this.convertLayerToStatic(this.groundLayer);
+    }
+
+    createEmptyMap() {
+        let layerData = [];
+        for (let i = 0; i < config.MAP_HEIGHT_TILES; i++) {
+            layerData.push([]);
+            for (let j = 0; j < config.MAP_WIDTH_TILES; j++) {
+                layerData[i].push(0);
+            }
+        }
+        this.groundLayer = this.createBlankDynamicLayer("Ground", this.tileset);
+        this.groundLayer.putTilesAt(layerData, 0, 0);
+        this.groundLayer = this.convertLayerToStatic(this.groundLayer);
+    }
+
+    createObstacleMap() {
+        let layerData = [];
+        for (let i = 0; i < config.MAP_HEIGHT_TILES; i++) {
+            layerData.push([]);
+            for (let j = 0; j < config.MAP_WIDTH_TILES; j++) {
+                if (((j == 10) & (i > 10)) | ((j == 13) & (i < 15))) {
+                    layerData[i].push(20);
+                } else {
+                    layerData[i].push(0);
+                }
+            }
+        }
+        this.groundLayer = this.createBlankDynamicLayer("Ground", this.tileset);
+        this.groundLayer.putTilesAt(layerData, 0, 0);
+        this.groundLayer = this.convertLayerToStatic(this.groundLayer);
     }
 
     generateRandomMap() {
@@ -206,7 +239,12 @@ export default class GameMap extends Phaser.Tilemaps.Tilemap {
 
     isTileAccessible(tile) {
         let tile_id = tile.index;
-        return this.walkables.includes(tile_id);
+        return this.accessibles.includes(tile_id);
+    }
+
+    isTileAccessibleAt(i, j) {
+        let tile = this.getTileAt(i, j);
+        return this.isTileAccessible(tile);
     }
 
     // At the moment these are the same
@@ -219,5 +257,18 @@ export default class GameMap extends Phaser.Tilemaps.Tilemap {
         let x = tile.pixelX + this.mapConfig.tileWidth / 2;
         let y = tile.pixelY + this.mapConfig.tileHeight / 2;
         return { x, y };
+    }
+
+    getRandomAccessibleTile() {
+        let tile = undefined;
+        while (!tile) {
+            let x = Phaser.Math.Between(0, config.MAP_WIDTH_TILES - 1);
+            let y = Phaser.Math.Between(0, config.MAP_HEIGHT_TILES - 1);
+            // console.log(row, col)
+            if (this.isTileAccessibleAt(x, y)) {
+                tile = this.getTileAt(x, y);
+            }
+        }
+        return tile;
     }
 }

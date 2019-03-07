@@ -4,15 +4,22 @@ Classes for specific buildings extend this class.
 */
 
 export default class Building extends Phaser.GameObjects.Sprite {
-    constructor(scene, x, y, key, tribe) {
-        // Create sprite
+    constructor(scene, tile, key, tribeId) {
+        // Get sprite config
         let objConfig = scene.getGameObjectConfig(key);
         const { spriteKey, scaleX, scaleY } = objConfig;
+        // Get position of tile
+        let { x, y } = scene.map.getTileCenter(tile);
+
+        // Create sprite
         super(scene, x, y, spriteKey);
 
         // Set config properties
         this.setScale(scaleX, scaleY);
-        this.tribe = tribe;
+
+        // Set other properties
+        this.tile = tile;
+        this.tribeId = tribeId;
         // Add to scene
         scene.add.existing(this);
 

@@ -31,8 +31,8 @@ export class CameraManager {
     update() {
         // Limit camera zoom
         let cameras = this.scene.cameras;
-        cameras.main.setZoom(Math.min(cameras.main.zoom, 0.5));
-        cameras.main.setZoom(Math.max(cameras.main.zoom, 0.3));
+        cameras.main.setZoom(Math.min(cameras.main.zoom, 0.55));
+        cameras.main.setZoom(Math.max(cameras.main.zoom, 0.4));
     }
 
     addAllCameras() {

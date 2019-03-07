@@ -24,8 +24,6 @@ class HudScene extends Phaser.Scene {
     }
 
     create() {
-        console.log("Creating HudScene");
-
         this.gameScene = this.scene.get("GameScene");
 
         this.gameScene.events.on(
@@ -80,9 +78,7 @@ class HudScene extends Phaser.Scene {
         this.updateClickCountText();
     }
 
-    updateClickCountText() {
-        console.log("clicked");
-    }
+    updateClickCountText() {}
 
     // Converts coordinates within staticPanel to viewport coordinates
     staticPanelXtoViewportX(x) {

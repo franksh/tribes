@@ -56,15 +56,12 @@ const config = {
     // },
 
     // renderer: Phaser.CANVAS,
-    // physics: {
-    //     default: "arcade",
-    //     arcade: {
-    //         gravity: {
-    //             y: 800
-    //         },
-    //         debug: false
-    //     }
-    // },
+    physics: {
+        default: "arcade",
+        arcade: {
+            debug: false
+        }
+    },
     scene: [
         BootScene,
         // TitleScene,

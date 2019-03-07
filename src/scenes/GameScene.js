@@ -1,9 +1,11 @@
 // import Mario from '../sprites/Mario';
 // import Goomba from '../sprites/Goomba';
 import GameMap from "../components/map.js";
+import Pathfinder from "../components/pathfinder";
 import { CameraManager } from "../components/camera";
 import { config as cfg } from "../config";
 import { HQ } from "../sprites/buildings/HQ";
+import { Worker } from "../sprites/units/Worker";
 import Tribe from "../sprites/Tribe";
 // import MyPointer from "../components/pointer";
 import { PointerManager } from "../components/pointer";
@@ -26,10 +28,12 @@ class GameScene extends Phaser.Scene {
         this.cameraManager.addAllCameras();
         // Pointer
         this.pointerManager = new PointerManager(this);
+        // Pathfinding
+        this.pathfinder = new Pathfinder(this);
 
         // Game loop
         this.logicTimer = this.time.addEvent({
-            delay: 1000,
+            delay: 500,
             callback: this.updateLogic,
             callbackScope: this,
             timeScale: cfg.timeScale,
@@ -38,15 +42,29 @@ class GameScene extends Phaser.Scene {
 
         let tribe1 = new Tribe(1, true);
 
-        // CREATE OBJECTS
-        let hq = new HQ({
+        this.tryCreateBuilding("hq", this.map.getTileAt(0, 0), tribe1.id);
+        // CREATE Test OBJECTS
+        new HQ({
             gameScene: this,
-            x: 100,
-            y: 100,
+            tile: this.map.getTileAt(1, 1),
             tribe: tribe1
         });
 
-        console.log(this.children);
+        let worker = this.tryCreateUnit(
+            "worker",
+            this.map.getTileAt(20, 10),
+            tribe1.id
+        );
+        for (let i = 0; i <= 20; i++) {
+            this.createUnitRandomTile("worker", 1);
+        }
+        let targetTile = this.map.getTileAt(10, 10);
+        worker.setDestination(targetTile);
+        // worker.moveToTile(targetTile);
+        // this.physics.add.image(2000, 1000, 'worker1');
+
+        console.log(worker);
+        console.log(this);
     }
 
     update(time, delta) {
@@ -57,28 +75,22 @@ class GameScene extends Phaser.Scene {
         // Camera movement
         this.controls.update(delta);
 
+        this.children.list.forEach(child => {
+            child.update(time, delta);
+        });
         // this.controlsMini.update(delta);
     }
 
     updateLogic() {
-        let children = this.children.list;
-        // console.log(children);
-        for (let i in children) {
-            if ("updateLogic" in children[i]) {
-                children[i].updateLogic();
-            }
-        }
-        // for (let i = 0; i < children.length; i++) {
+        // let children = this.children.list;
+        // for (let i in children) {
         //     if ("updateLogic" in children[i]) {
         //         children[i].updateLogic();
         //     }
         // }
-        // console.log(
-        //     this.logicTimer
-        //         .getProgress()
-        //         .toString()
-        //         .substr(0, 4)
-        // );
+        this.children.list.forEach(child => {
+            if ("updateLogic" in child) child.updateLogic();
+        });
     }
 
     tileCollision(sprite, tile) {}
@@ -95,14 +107,39 @@ class GameScene extends Phaser.Scene {
       )
     } */
 
-    createBuilding(key, x, y) {
+    tryCreateBuilding(key, tile, tribe) {
+        // Check if tile is builadble
+        if (!this.map.isTileBuildable(tile)) return false;
+
+        // TODO: Check if resources suffice
+
+        // If success: Build at location
+        this.createBuilding(key, tile, tribe);
+        return true;
+    }
+
+    createBuilding(key, tile, tribe) {
+        // Build entity at location
         if (key === "hq") {
-            let hq = new HQ({
-                gameScene: this,
-                x: x,
-                y: y
-            });
+            new HQ({ gameScene: this, tile, tribe });
         }
+        return true;
+    }
+
+    tryCreateUnit(key, tile, tribe) {
+        if (!this.map.isTileAccessible(tile)) return false;
+        return this.createUnit(key, tile, tribe);
+    }
+
+    createUnit(key, tile, tribe) {
+        if (key === "worker") {
+            return new Worker({ gameScene: this, tile, tribe });
+        }
+    }
+
+    createUnitRandomTile(key, tribe) {
+        let tile = this.map.getRandomAccessibleTile();
+        return this.createUnit(key, tile, tribe);
     }
 
     getGameObjectConfig(key) {

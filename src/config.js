@@ -3,13 +3,15 @@ export const config = {
     TILE_HEIGHT: 64,
     TILE_MARGIN: 32,
     TILE_SPACING: 32,
-    MAP_WIDTH_TILES: 60, // make divisible by 4
-    MAP_HEIGHT_TILES: 40,
+    MAP_WIDTH_TILES: 40, // make divisible by 4
+    MAP_HEIGHT_TILES: 20,
     viewport: {
         WIDTH: 800,
         HEIGHT: 600
     },
     timeScale: 1,
+    gameSpeed: 1,
+    baseUnitSpeed: 200,
     gameObjects: {
         HQ: {
             key: "hq",
@@ -17,6 +19,13 @@ export const config = {
             scaleX: 0.5,
             scaleY: 0.5,
             cost: 100
+        },
+        worker: {
+            key: "worker",
+            spriteKey: "worker1",
+            scaleX: 0.8,
+            scaleY: 0.8,
+            speedMod: 1
         }
     }
 };
