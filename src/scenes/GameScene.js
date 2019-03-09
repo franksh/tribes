@@ -6,6 +6,8 @@ import { CameraManager } from "../components/camera";
 import { config as cfg } from "../config";
 import { HQ } from "../sprites/buildings/HQ";
 import { Worker } from "../sprites/units/Worker";
+import { Gatherer } from "../sprites/units/Gatherer";
+
 import Tribe from "../sprites/Tribe";
 // import MyPointer from "../components/pointer";
 import { PointerManager } from "../components/pointer";
@@ -21,8 +23,10 @@ class GameScene extends Phaser.Scene {
     create() {
         // SET UP MANAGERS
         // Map
-        this.map = new GameMap(this);
-        this.map.createMap();
+        // this.map = new GameMap(this, cfg.levelKey);
+        // this.map.createMap();
+        let mapConfig = this.loadMapConfig();
+        this.map = new GameMap(this, mapConfig);
         // Camera
         this.cameraManager = new CameraManager(this);
         this.cameraManager.addAllCameras();
@@ -40,30 +44,31 @@ class GameScene extends Phaser.Scene {
             loop: true
         });
 
+        this.tribes = [];
         let tribe1 = new Tribe(1, true);
+        this.tribes.push(tribe1);
 
-        this.tryCreateBuilding("hq", this.map.getTileAt(0, 0), tribe1.id);
-        // CREATE Test OBJECTS
-        new HQ({
-            gameScene: this,
-            tile: this.map.getTileAt(1, 1),
-            tribe: tribe1
-        });
+        console.log(this);
+
+        // // CREATE Test OBJECTS
+        this.tryCreateBuilding("hq", this.map.getGroundTileAt(0, 0), tribe1.id);
 
         let worker = this.tryCreateUnit(
             "worker",
-            this.map.getTileAt(20, 10),
+            this.map.getGroundTileAt(20, 10),
             tribe1.id
         );
-        for (let i = 0; i <= 20; i++) {
-            this.createUnitRandomTile("worker", 1);
-        }
-        let targetTile = this.map.getTileAt(10, 10);
-        worker.setDestination(targetTile);
+        // for (let i = 0; i <= 20; i++) {
+        //     this.createUnitRandomTile("gatherer", 1);
+        // }
+        // let targetTile = this.map.getGroundTileAt(10, 10);
+        // console.log(targetTile);
+        // worker.setDestination(targetTile);
+        // console.log(worker);
+
         // worker.moveToTile(targetTile);
         // this.physics.add.image(2000, 1000, 'worker1');
 
-        console.log(worker);
         console.log(this);
     }
 
@@ -135,6 +140,9 @@ class GameScene extends Phaser.Scene {
         if (key === "worker") {
             return new Worker({ gameScene: this, tile, tribe });
         }
+        if (key === "gatherer") {
+            return new Gatherer({ gameScene: this, tile, tribe });
+        }
     }
 
     createUnitRandomTile(key, tribe) {
@@ -152,6 +160,50 @@ class GameScene extends Phaser.Scene {
     getGameObjectProperty(key, property) {
         let objConfig = this.getGameObjectConfig(key);
         return objConfig[property];
+    }
+
+    loadMapConfig() {
+        var levelKey = cfg.levelKey;
+        let mapConfig = {};
+        if (cfg.levelPremade) {
+            // let layerData = this.parseLevelCSVToArray(levelKey);
+            let tilemapData = this.parseLevelData(levelKey);
+            mapConfig.tilemapData = tilemapData;
+            mapConfig.width = tilemapData.layers[0].width;
+            mapConfig.height = tilemapData.layers[0].height;
+            mapConfig.tileWidth = tilemapData.tilewidth;
+            mapConfig.tileHeight = tilemapData.tileheight;
+        } else {
+            mapConfig.levelKey = levelKey;
+            mapConfig.width = cfg.MAP_WIDTH_TILES;
+            mapConfig.height = cfg.MAP_HEIGHT_TILES;
+            mapConfig.tileWidth = cfg.TILE_WIDTH;
+            mapConfig.tileHeight = cfg.TILE_HEIGHT;
+        }
+        return mapConfig;
+    }
+
+    parseLevelData(levelKey) {
+        let mapKey = "map" + levelKey;
+        var tilemapData = this.cache.tilemap.get(mapKey).data;
+        return tilemapData;
+    }
+
+    parseLevelCSVToArray(levelKey) {
+        let mapKey = "map" + levelKey;
+        var layerDataStr = this.cache.tilemap.get(mapKey).data;
+        var lineStrings = layerDataStr.split("\n");
+        var layerData = [];
+        for (let lineStr of lineStrings) {
+            if (lineStr.length > 1) {
+                let lineData = [];
+                for (let char of lineStr.split(",")) {
+                    lineData.push(parseInt(char));
+                }
+                layerData.push(lineData);
+            }
+        }
+        return layerData;
     }
 
     updateScore(score) {}

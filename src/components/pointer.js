@@ -117,7 +117,7 @@ export class PointerManager {
     isEntityPlaceableAtPointerLoc() {
         let pointerCoords = this.getPointerWorldCoords();
         let map = this.gameScene.map;
-        let tile = map.getTileAtWorldXY(pointerCoords.x, pointerCoords.y);
+        let tile = map.getGroundTileAtWorldXY(pointerCoords.x, pointerCoords.y);
         if (tile) {
             return map.isTileAccessible(tile);
         }
@@ -156,7 +156,7 @@ export class PointerManager {
     getTileUnderPointer() {
         let pointerCoords = this.getPointerWorldCoords();
         let map = this.gameScene.map;
-        let tile = map.getTileAtWorldXY(pointerCoords.x, pointerCoords.y);
+        let tile = map.getGroundTileAtWorldXY(pointerCoords.x, pointerCoords.y);
         return tile;
     }
 }

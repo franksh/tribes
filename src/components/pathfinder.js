@@ -22,7 +22,9 @@ export default class Pathfinder {
         for (let i = 0; i < config.MAP_HEIGHT_TILES; i++) {
             grid.push([]);
             for (let j = 0; j < config.MAP_WIDTH_TILES; j++) {
-                grid[i].push(this.scene.map.getTileAt(j, i).index);
+                grid[i].push(
+                    this.scene.map.getTileAt(j, i, false, "GroundLayer").index
+                );
             }
         }
         this.easystar.setGrid(grid);

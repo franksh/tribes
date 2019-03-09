@@ -3,22 +3,20 @@ import { config } from "../config";
 import SimplexNoise from "simplex-noise/simplex-noise";
 
 export default class GameMap extends Phaser.Tilemaps.Tilemap {
-    constructor(scene) {
-        let mapConfig = {
-            tileWidth: config.TILE_WIDTH,
-            tileHeight: config.TILE_HEIGHT,
-            width: config.MAP_WIDTH_TILES,
-            height: config.MAP_HEIGHT_TILES
-        };
+    constructor(scene, mapConfig) {
+        // Create the Tilmap Object with prepare config data
+        // Map itself is created in initialize
         let mapData = new Phaser.Tilemaps.MapData(mapConfig);
-
         super(scene, mapData);
-
         this.mapConfig = mapConfig;
 
         this.initialize();
     }
 
+    /* 
+    Set further properties of the map,
+    and finally generate map.
+     */
     initialize() {
         this.tile_texture_ids = {
             grass_a: 0,
@@ -56,15 +54,130 @@ export default class GameMap extends Phaser.Tilemaps.Tilemap {
             TILE_MARGIN_EXTRUDED,
             TILE_SPACING_EXTRUDED
         );
-        this.layer = null;
+
+        // Create map
+        this.createMap();
     }
 
     createMap() {
-        // this.createSimpleMap();
-        // this.createEmptyMap();
-        this.createObstacleMap();
-        // this.generateRandomMap();
+        if (config.levelPremade) {
+            this.createPremadeMap();
+        } else {
+            this.generateRandomMap();
+            // this.createSimpleMap();
+            // this.createEmptyMap();
+            // this.createObstacleMap();
+        }
     }
+
+    createPremadeMap() {
+        // Create each layer in Tilemap data
+        // Make: GroundLayer, ResourceLayer
+        let tilemapData = this.mapConfig.tilemapData;
+        tilemapData.layers.forEach(this.makeLayer.bind(this));
+    }
+
+    /* Create the layers in the tilemap.
+    Usually these are:
+    - Ground layer
+    - Resource layer 
+    */
+    makeLayer(layerRaw) {
+        let data = layerRaw.data;
+
+        // Calculate layer data
+        let layerData = [];
+        // Subtract 1 from all values in data, bc JSON
+        for (let i in data) data[i] = data[i] - 1;
+        // Reshape the array (1D) to 2D and store
+        let width = layerRaw.width;
+        while (data.length) layerData.push(data.splice(0, width));
+
+        // Generate layer and save
+        let layerName = layerRaw.name;
+        let layer = this.createBlankDynamicLayer(layerName, this.tileset);
+        layer.putTilesAt(layerData, 0, 0);
+        if (layerName === "GroundLayer") {
+            layer = this.convertLayerToStatic(layer);
+        }
+    }
+
+    makeObjectLayer() {}
+
+    // TILE UTILITY FUNCTIONS
+
+    // Accessible = No ground obstacle and no resource present
+    isTileAccessible(tile) {
+        let tile_id = tile.index;
+        let isAccessible =
+            // Ground accessible
+            this.accessibles.includes(tile_id) &
+            // + No resource present
+            (this.getResourceTileAt(tile.x, tile.y) === null);
+        return isAccessible;
+    }
+
+    isTileAccessibleAt(i, j) {
+        let tile = this.getGroundTileAt(i, j);
+        return this.isTileAccessible(tile);
+    }
+
+    // Buildable = No ground obstacle and no resource present
+    // At the moment these are the same
+    isTileBuildable(tile) {
+        return this.isTileAccessible(tile);
+    }
+
+    // Returns the center of the tile
+    getTileCenter(tile) {
+        let x = tile.pixelX + this.mapConfig.tileWidth / 2;
+        let y = tile.pixelY + this.mapConfig.tileHeight / 2;
+        return { x, y };
+    }
+
+    // Returns ground tile at coordinates, wrapper
+    getGroundTileAtWorldXY(x, y) {
+        return this.getTileAtWorldXY(
+            x,
+            y,
+            false,
+            this.scene.cameras.main,
+            "GroundLayer"
+        );
+    }
+
+    getGroundTileAt(x, y) {
+        return this.getTileAt(x, y, null, "GroundLayer");
+    }
+
+    getResourceTileAtWorldXY(x, y) {
+        return this.getTileAtWorldXY(
+            x,
+            y,
+            false,
+            this.scene.cameras.main,
+            "ResourceLayer"
+        );
+    }
+
+    getResourceTileAt(x, y) {
+        return this.getTileAt(x, y, null, "ResourceLayer");
+    }
+
+    getRandomAccessibleTile() {
+        let tile = undefined;
+        while (!tile) {
+            let x = Phaser.Math.Between(0, config.MAP_WIDTH_TILES - 1);
+            let y = Phaser.Math.Between(0, config.MAP_HEIGHT_TILES - 1);
+            // console.log(row, col)
+            if (this.isTileAccessibleAt(x, y)) {
+                tile = this.getGroundTileAt(x, y);
+            }
+        }
+        return tile;
+    }
+
+    // MAP GENERATING FUNCTIONS
 
     // For testing purposes
     createSimpleMap() {
@@ -81,9 +194,12 @@ export default class GameMap extends Phaser.Tilemaps.Tilemap {
             [35, 36, 37, 0, 0, 0, 0, 0, 15, 15, 15],
             [39, 39, 39, 39, 39, 39, 39, 39, 39, 39, 39]
         ];
-        this.groundLayer = this.createBlankDynamicLayer("Ground", this.tileset);
-        this.groundLayer.putTilesAt(layerData, 0, 0);
-        this.groundLayer = this.convertLayerToStatic(this.groundLayer);
+        let groundLayer = this.createBlankDynamicLayer(
+            "GroundLayer",
+            this.tileset
+        );
+        groundLayer.putTilesAt(layerData, 0, 0);
+        groundLayer = this.convertLayerToStatic(groundLayer);
     }
 
     createEmptyMap() {
@@ -94,9 +210,12 @@ export default class GameMap extends Phaser.Tilemaps.Tilemap {
                 layerData[i].push(0);
             }
         }
-        this.groundLayer = this.createBlankDynamicLayer("Ground", this.tileset);
-        this.groundLayer.putTilesAt(layerData, 0, 0);
-        this.groundLayer = this.convertLayerToStatic(this.groundLayer);
+        let groundLayer = this.createBlankDynamicLayer(
+            "GroundLayer",
+            this.tileset
+        );
+        groundLayer.putTilesAt(layerData, 0, 0);
+        groundLayer = this.convertLayerToStatic(groundLayer);
     }
 
     createObstacleMap() {
@@ -111,9 +230,12 @@ export default class GameMap extends Phaser.Tilemaps.Tilemap {
                 }
             }
         }
-        this.groundLayer = this.createBlankDynamicLayer("Ground", this.tileset);
-        this.groundLayer.putTilesAt(layerData, 0, 0);
-        this.groundLayer = this.convertLayerToStatic(this.groundLayer);
+        let groundLayer = this.createBlankDynamicLayer(
+            "GroundLayer",
+            this.tileset
+        );
+        groundLayer.putTilesAt(layerData, 0, 0);
+        groundLayer = this.convertLayerToStatic(groundLayer);
     }
 
     generateRandomMap() {
@@ -130,11 +252,14 @@ export default class GameMap extends Phaser.Tilemaps.Tilemap {
         );
         let layerData = this.getLayerDataFromMaps(elevation_map, moisture_map);
 
-        this.groundLayer = this.createBlankDynamicLayer("Ground", this.tileset);
-        this.groundLayer.putTilesAt(layerData, 0, 0);
-        this.groundLayer = this.convertLayerToStatic(this.groundLayer);
-        // this.groundLayer = this.createStaticLayer("Ground", this.tileset);
-        // this.groundLayer.putTilesAt(layerData, 0, 0);
+        let groundLayer = this.createBlankDynamicLayer(
+            "GroundLayer",
+            this.tileset
+        );
+        groundLayer.putTilesAt(layerData, 0, 0);
+        groundLayer = this.convertLayerToStatic(groundLayer);
+        // groundLayer = this.createStaticLayer("GroundLayer", this.tileset);
+        // groundLayer.putTilesAt(layerData, 0, 0);
     }
 
     getNoise(nx, ny) {
@@ -204,12 +329,11 @@ export default class GameMap extends Phaser.Tilemaps.Tilemap {
         }
     }
 
-    getLayerDataFromMaps(elevation_map, moisture_map) {
-        /* Generate the map from noise maps
+    /* Generate the map from noise maps
       Converts values in tiles, according to biome map
       Returns array map with tile inidcies
       */
-        // var data = "";
+    getLayerDataFromMaps(elevation_map, moisture_map) {
         var data = [];
         for (var y = 0; y < config.MAP_HEIGHT_TILES; y++) {
             data.push([]);
@@ -224,51 +348,8 @@ export default class GameMap extends Phaser.Tilemaps.Tilemap {
                     console.log(e, m);
                 }
                 data[y].push(tileindex);
-
-                // if (x < config.MAP_WIDTH_TILES - 1) {
-                //     data += ",";
-                // }
             }
-
-            // if (y < MAP_HEIGHT_TILES - 1) {
-            //     data += "\n";
-            // }
         }
         return data;
-    }
-
-    isTileAccessible(tile) {
-        let tile_id = tile.index;
-        return this.accessibles.includes(tile_id);
-    }
-
-    isTileAccessibleAt(i, j) {
-        let tile = this.getTileAt(i, j);
-        return this.isTileAccessible(tile);
-    }
-
-    // At the moment these are the same
-    isTileBuildable(tile) {
-        return this.isTileAccessible(tile);
-    }
-
-    // Returns the center of the tile
-    getTileCenter(tile) {
-        let x = tile.pixelX + this.mapConfig.tileWidth / 2;
-        let y = tile.pixelY + this.mapConfig.tileHeight / 2;
-        return { x, y };
-    }
-
-    getRandomAccessibleTile() {
-        let tile = undefined;
-        while (!tile) {
-            let x = Phaser.Math.Between(0, config.MAP_WIDTH_TILES - 1);
-            let y = Phaser.Math.Between(0, config.MAP_HEIGHT_TILES - 1);
-            // console.log(row, col)
-            if (this.isTileAccessibleAt(x, y)) {
-                tile = this.getTileAt(x, y);
-            }
-        }
-        return tile;
     }
 }

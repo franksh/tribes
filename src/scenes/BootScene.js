@@ -19,6 +19,13 @@ class BootScene extends Phaser.Scene {
             );
         });
 
+        // Load level maps
+        // this.load.tilemapCSV("mapTestSimple", "../../assets/maps/test2.csv");
+        this.load.tilemapTiledJSON(
+            "mapTestSimple",
+            "../../assets/maps/TestSimple.json"
+        );
+
         // Register a load complete event to launch the title screen when all files are loaded
         this.load.on("complete", () => {
             // prepare all animations, defined in a separate file
@@ -34,6 +41,7 @@ class BootScene extends Phaser.Scene {
         );
 
         this.load.image("worker1", "assets/units/medievalUnit_01.png"); //, 32, 48)
+        this.load.image("gatherer1", "assets/units/medievalUnit_01b.png"); //, 32, 48)
         this.load.image("fighter1", "assets/units/medievalUnit_03.png", 64, 64); //, 32, 48)
         this.load.image(
             "berry_icon",

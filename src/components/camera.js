@@ -146,7 +146,7 @@ export class CameraManager {
             // .add(camCfg.posX, camCfg.posY, minimapHeight, minimapWidth)
             .setBounds(0, 0, mapWidth, mapHeight)
             .setZoom(minimapZoom * 1.0)
-            .setRoundPixels(false)
+            .setRoundPixels(true)
             // .centerToSize()
             .setName("mini");
         // scene.minimap.roundPixels = true;

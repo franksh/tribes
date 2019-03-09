@@ -4,7 +4,9 @@ export const config = {
     TILE_MARGIN: 32,
     TILE_SPACING: 32,
     MAP_WIDTH_TILES: 40, // make divisible by 4
-    MAP_HEIGHT_TILES: 20,
+    MAP_HEIGHT_TILES: 30,
+    levelPremade: true,
+    levelKey: "TestSimple",
     viewport: {
         WIDTH: 800,
         HEIGHT: 600
@@ -23,6 +25,13 @@ export const config = {
         worker: {
             key: "worker",
             spriteKey: "worker1",
+            scaleX: 0.8,
+            scaleY: 0.8,
+            speedMod: 0.5
+        },
+        gatherer: {
+            key: "gatherer",
+            spriteKey: "gatherer1",
             scaleX: 0.8,
             scaleY: 0.8,
             speedMod: 1

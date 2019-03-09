@@ -87,7 +87,7 @@ export default class Unit extends Phaser.GameObjects.Sprite {
 
     setNextTargetFromPath() {
         let { x, y } = this.path.shift();
-        this.target = this.scene.map.getTileAt(x, y);
+        this.target = this.scene.map.getGroundTileAt(x, y);
     }
 
     setPathToDestination() {
@@ -163,7 +163,7 @@ export default class Unit extends Phaser.GameObjects.Sprite {
     // }
 
     getOwnTile() {
-        return this.scene.map.getTileAtWorldXY(this.x, this.y);
+        return this.scene.map.getGroundTileAtWorldXY(this.x, this.y);
     }
 
     // setTarget(tile) {

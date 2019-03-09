@@ -13,11 +13,9 @@ export class HQ extends Building {
     createGatheringSite() {
         // Get tile two tiles beneath this one
         let { x, y } = this.tile;
-        let tileTwoDown = this.scene.map.getTileAt(x, y + 2);
+        let tileTwoDown = this.scene.map.getGroundTileAt(x, y + 2);
         console.log(tileTwoDown);
         return tileTwoDown;
-
-        // this.scene.map.getTileAtWorldXY(pointerCoords.x, pointerCoords.y);
     }
 
     updateLogic() {
