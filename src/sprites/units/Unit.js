@@ -21,7 +21,7 @@ export default class Unit extends Phaser.GameObjects.Sprite {
 
         // Set other properties
         this.tile = tile;
-        this.tribeId = tribeId;
+        this.tribe = scene.getTribe(tribeId);
         // Add to scene
         this.scene.physics.world.enable(this);
         this.scene.add.existing(this);
@@ -82,6 +82,7 @@ export default class Unit extends Phaser.GameObjects.Sprite {
             else {
                 if (this.hasDestination()) {
                     this.setPathToDestination();
+                    this.clearDestinationIfReached();
                 }
             }
         }

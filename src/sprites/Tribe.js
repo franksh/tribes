@@ -10,6 +10,8 @@ export default class Tribe {
 
         this.popLimit = 5;
         this.pop = 0;
+
+        this.gatheringSite = undefined;
     }
 
     getResourceCount() {
@@ -30,5 +32,9 @@ export default class Tribe {
 
     atPopLimit() {
         return this.pop == this.popLimit;
+    }
+
+    setGatheringSite(tile) {
+        this.gatheringSite = tile;
     }
 }

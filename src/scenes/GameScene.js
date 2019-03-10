@@ -53,14 +53,17 @@ class GameScene extends Phaser.Scene {
         // // CREATE Test OBJECTS
         // this.tryCreateBuilding("hq", this.map.getGroundTileAt(0, 0), tribe1.id);
 
-        let worker = this.tryCreateUnit(
-            "worker",
-            this.map.getGroundTileAt(20, 10),
-            tribe1.id
-        );
-        for (let i = 0; i <= 20; i++) {
-            this.createUnitRandomTile("gatherer", 1);
-        }
+        // let worker = this.tryCreateUnit(
+        //     "worker",
+        //     this.map.getGroundTileAt(20, 10),
+        //     tribe1.id
+        // );
+
+        // Create 20 gatherers
+        // for (let i = 0; i <= 20; i++) {
+        //     this.createUnitRandomTile("gatherer", 1);
+        // }
+
         // let targetTile = this.map.getGroundTileAt(10, 10);
         // console.log(targetTile);
         // worker.setDestination(targetTile);
@@ -131,23 +134,23 @@ class GameScene extends Phaser.Scene {
         return true;
     }
 
-    tryCreateUnit(key, tile, tribe) {
+    tryCreateUnit(key, tile, tribeId) {
         if (!this.map.isTileAccessible(tile)) return false;
-        return this.createUnit(key, tile, tribe);
+        return this.createUnit(key, tile, tribeId);
     }
 
-    createUnit(key, tile, tribe) {
+    createUnit(key, tile, tribeId) {
         if (key === "worker") {
-            return new Worker({ gameScene: this, tile, tribe });
+            return new Worker({ gameScene: this, tile, tribeId });
         }
         if (key === "gatherer") {
-            return new Gatherer({ gameScene: this, tile, tribe });
+            return new Gatherer({ gameScene: this, tile, tribeId });
         }
     }
 
-    createUnitRandomTile(key, tribe) {
+    createUnitRandomTile(key, tribeId) {
         let tile = this.map.getRandomAccessibleTile();
-        return this.createUnit(key, tile, tribe);
+        return this.createUnit(key, tile, tribeId);
     }
 
     getTribe(id) {

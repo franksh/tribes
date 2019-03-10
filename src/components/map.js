@@ -8,6 +8,7 @@ export default class GameMap extends Phaser.Tilemaps.Tilemap {
         // Map itself is created in initialize
         let mapData = new Phaser.Tilemaps.MapData(mapConfig);
         super(scene, mapData);
+        this.scene = scene;
         this.mapConfig = mapConfig;
 
         this.initialize();
@@ -157,6 +158,34 @@ export default class GameMap extends Phaser.Tilemaps.Tilemap {
 
     getGroundTileAt(x, y) {
         return this.getTileAt(x, y, null, "GroundLayer");
+    }
+
+    // Returns all tiles in a cirlce around x, y
+    getGroundTilesCircleAt(x, y, radius) {
+        // Create a circle with this as center
+        let tile = this.getGroundTileAt(x, y);
+        let coords = this.getTileCenter(tile);
+        let circle = new Phaser.Geom.Circle(coords.x, coords.y, radius);
+        // Get tile within circle
+        let tiles = this.getTilesWithinShape(
+            circle,
+            undefined,
+            this.scene.cameras.main,
+            "GroundLayer"
+        );
+        return tiles;
+    }
+
+    getRandomAccessibleTileInCircle(x, y, radius) {
+        let tiles = this.getGroundTilesCircleAt(x, y, radius);
+        let tilesAccessible = [];
+        for (let tile of tiles) {
+            if (this.isTileAccessible(tile)) tilesAccessible.push(tile);
+        }
+        if (tilesAccessible.length == 0) return null;
+
+        let randIdx = Phaser.Math.Between(0, tilesAccessible.length - 1);
+        return tilesAccessible[randIdx];
     }
 
     getResourceTileAtWorldXY(x, y) {

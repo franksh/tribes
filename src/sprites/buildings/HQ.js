@@ -26,6 +26,8 @@ export class HQ extends Building {
         let { x, y } = this.tile;
         let tileOneDown = this.scene.map.getGroundTileAt(x, y + 1);
         this.gatheringSite = tileOneDown;
+
+        this.tribe.setGatheringSite(this.gatheringSite);
     }
 
     initializeSpawnTimer() {
