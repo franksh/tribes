@@ -112,21 +112,21 @@ class GameScene extends Phaser.Scene {
       )
     } */
 
-    tryCreateBuilding(key, tile, tribe) {
+    tryCreateBuilding(key, tile, tribeId) {
         // Check if tile is builadble
         if (!this.map.isTileBuildable(tile)) return false;
 
         // TODO: Check if resources suffice
 
         // If success: Build at location
-        this.createBuilding(key, tile, tribe);
+        this.createBuilding(key, tile, tribeId);
         return true;
     }
 
-    createBuilding(key, tile, tribe) {
+    createBuilding(key, tile, tribeId) {
         // Build entity at location
         if (key === "hq") {
-            new HQ({ gameScene: this, tile, tribe });
+            new HQ({ gameScene: this, tile, tribeId });
         }
         return true;
     }
@@ -148,6 +148,12 @@ class GameScene extends Phaser.Scene {
     createUnitRandomTile(key, tribe) {
         let tile = this.map.getRandomAccessibleTile();
         return this.createUnit(key, tile, tribe);
+    }
+
+    getTribe(id) {
+        return this.tribes.filter(function(tribe) {
+            return tribe.id === id;
+        })[0];
     }
 
     getGameObjectConfig(key) {

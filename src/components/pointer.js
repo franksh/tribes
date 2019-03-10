@@ -109,8 +109,8 @@ export class PointerManager {
 
         // Try the build
         let entityKey = this.loadedEntity.key;
-        let tribe = 1;
-        return this.gameScene.tryCreateBuilding(entityKey, tile, tribe);
+        let tribeId = 1;
+        return this.gameScene.tryCreateBuilding(entityKey, tile, tribeId);
         // // Check if tile is builadble
         // let map = this.gameScene.map;
         // if (!map.isTileBuildable(tile)) return false;

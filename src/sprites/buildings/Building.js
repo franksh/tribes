@@ -21,7 +21,7 @@ export default class Building extends Phaser.GameObjects.Sprite {
 
         // Set other properties
         this.tile = tile;
-        this.tribeId = tribeId;
+        this.tribe = scene.getTribe(tribeId);
         this.tilesetId = tilesetID;
 
         // Handle effects on other objects
