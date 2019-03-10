@@ -75,6 +75,9 @@ export default class GameMap extends Phaser.Tilemaps.Tilemap {
         // Make: GroundLayer, ResourceLayer
         let tilemapData = this.mapConfig.tilemapData;
         tilemapData.layers.forEach(this.makeLayer.bind(this));
+
+        // Make: BuildingLayer
+        this.makeBuildingLayer();
     }
 
     /* Create the layers in the tilemap.
@@ -102,7 +105,11 @@ export default class GameMap extends Phaser.Tilemaps.Tilemap {
         }
     }
 
-    makeObjectLayer() {}
+    // Layer for buildings, etc.
+    makeBuildingLayer() {
+        let layer = this.createBlankDynamicLayer("BuildingLayer", this.tileset);
+        // console.log(layer);
+    }
 
     // TILE UTILITY FUNCTIONS
 
@@ -113,7 +120,9 @@ export default class GameMap extends Phaser.Tilemaps.Tilemap {
             // Ground accessible
             this.accessibles.includes(tile_id) &
             // + No resource present
-            (this.getResourceTileAt(tile.x, tile.y) === null);
+            (this.getResourceTileAt(tile.x, tile.y) === null) &
+            // + No buildings present
+            (this.getBuildingTileAt(tile.x, tile.y) === null);
         return isAccessible;
     }
 
@@ -162,6 +171,25 @@ export default class GameMap extends Phaser.Tilemaps.Tilemap {
 
     getResourceTileAt(x, y) {
         return this.getTileAt(x, y, null, "ResourceLayer");
+    }
+
+    getBuildingTileAtWorldXY(x, y) {
+        return this.getTileAtWorldXY(
+            x,
+            y,
+            false,
+            this.scene.cameras.main,
+            "BuildingLayer"
+        );
+    }
+
+    getBuildingTileAt(x, y) {
+        return this.getTileAt(x, y, null, "BuildingLayer");
+    }
+
+    putBuildingTileAt(x, y, tilesetID) {
+        this.putTileAt(tilesetID, x, y, false, "BuildingLayer");
+        // console.log(x, y, tilesetID);
     }
 
     getRandomAccessibleTile() {

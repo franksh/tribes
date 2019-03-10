@@ -87,9 +87,16 @@ export class PointerManager {
             Phaser.Input.Keyboard.KeyCodes.SHIFT
         );
         var shiftIsDown = keyObj.isDown;
+        // If shift not down, unload
         if (!shiftIsDown) {
             this.unloadEntity(this.loadedEntity);
             this.hudScene.buildPanel.deactivateAllButtons();
+        }
+        // Else, unload and reload entity (so that it is displayed correctly)
+        else {
+            let entityKey = this.loadedEntity.key;
+            this.unloadEntity(this.loadedEntity);
+            this.loadEntity(entityKey);
         }
     }
 

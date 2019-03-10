@@ -35,6 +35,16 @@ export default class Unit extends Phaser.GameObjects.Sprite {
         this.status = "random";
         // this.alive = true;
         // console.log(this);
+        this.initializeListeners();
+    }
+
+    initializeListeners() {
+        let ee = this.scene.sys.events;
+        ee.on(
+            "pathfindingGridUpdated",
+            this.recalculatePathIfContainsChange,
+            this
+        );
     }
 
     update() {
@@ -97,10 +107,46 @@ export default class Unit extends Phaser.GameObjects.Sprite {
             ownTile.y,
             this.destination.x,
             this.destination.y,
+            // function(path) {
+            //     this.path = path;
+            // }.bind(this)
             function(path) {
-                this.path = path;
+                let success = this.setPath(path);
+                if (!success) this.determineNewDestination();
             }.bind(this)
         );
+    }
+
+    setPathEmpty() {
+        this.path = [];
+    }
+
+    setPath(path) {
+        if ((path !== undefined) & (path !== null)) {
+            this.path = path;
+            return true;
+        } else {
+            this.path = [];
+            return false;
+        }
+    }
+
+    /* Recalculate the paths
+    If current paths contains the changed tile, recalculate path.
+    If no tile is given, recalculate anyway.
+    */
+    recalculatePathIfContainsChange(tile = undefined) {
+        // If a tile is given, check if in current path.
+        if (tile !== undefined) {
+            if (this.doesPathContainTile(tile)) {
+                // If so, recalculate
+                this.setPathEmpty();
+            }
+        }
+        // If no tile given, always recalculate
+        else {
+            this.setPathEmpty();
+        }
     }
 
     getRandomDestination() {
@@ -186,6 +232,14 @@ export default class Unit extends Phaser.GameObjects.Sprite {
 
     hasNonEmptyPath() {
         return this.path.length > 0;
+    }
+
+    doesPathContainTile(tile) {
+        // TODO
+        for (let pTile of this.path) {
+            if ((pTile.x == tile.x) & (pTile.y === tile.y)) return true;
+        }
+        return false;
     }
 
     stopMovement() {

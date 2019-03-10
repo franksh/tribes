@@ -1,3 +1,5 @@
+import { EEXIST } from "constants";
+
 /*
 Generic building class that extends Phaser sprites.
 Classes for specific buildings extend this class.
@@ -7,7 +9,7 @@ export default class Building extends Phaser.GameObjects.Sprite {
     constructor(scene, tile, key, tribeId) {
         // Get sprite config
         let objConfig = scene.getGameObjectConfig(key);
-        const { spriteKey, scaleX, scaleY } = objConfig;
+        const { spriteKey, scaleX, scaleY, tilesetID } = objConfig;
         // Get position of tile
         let { x, y } = scene.map.getTileCenter(tile);
 
@@ -20,10 +22,24 @@ export default class Building extends Phaser.GameObjects.Sprite {
         // Set other properties
         this.tile = tile;
         this.tribeId = tribeId;
+        this.tilesetId = tilesetID;
+
+        // Handle effects on other objects
         // Add to scene
+
         scene.add.existing(this);
+        // Building map
+        scene.map.putBuildingTileAt(tile.x, tile.y, tilesetID);
+
+        let ee = scene.sys.events;
+        ee.emit("buildingCreated", this);
+
+        // Pathfinder
+        // scene.pathfinder.updateGrid();
+        // TODO: Delete all saved paths, force recalculation
 
         // Add other properties
+        // Example:
         this.alive = true;
     }
 }

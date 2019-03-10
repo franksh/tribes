@@ -18,6 +18,7 @@ export const config = {
         HQ: {
             key: "hq",
             spriteKey: "house_simple",
+            tilesetID: 113,
             scaleX: 0.5,
             scaleY: 0.5,
             cost: 100

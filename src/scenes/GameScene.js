@@ -51,16 +51,16 @@ class GameScene extends Phaser.Scene {
         console.log(this);
 
         // // CREATE Test OBJECTS
-        this.tryCreateBuilding("hq", this.map.getGroundTileAt(0, 0), tribe1.id);
+        // this.tryCreateBuilding("hq", this.map.getGroundTileAt(0, 0), tribe1.id);
 
         let worker = this.tryCreateUnit(
             "worker",
             this.map.getGroundTileAt(20, 10),
             tribe1.id
         );
-        // for (let i = 0; i <= 20; i++) {
-        //     this.createUnitRandomTile("gatherer", 1);
-        // }
+        for (let i = 0; i <= 20; i++) {
+            this.createUnitRandomTile("gatherer", 1);
+        }
         // let targetTile = this.map.getGroundTileAt(10, 10);
         // console.log(targetTile);
         // worker.setDestination(targetTile);
